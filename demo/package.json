@@ -2,6 +2,7 @@
   "name": "react-piano-demo",
   "homepage": "https://www.kevinqi.com/react-piano",
   "version": "0.1.0",
+  "packageManager": "yarn@1.22.22",
   "license": "MIT",
   "dependencies": {
     "classnames": "^2.2.5",
@@ -12,7 +13,7 @@
     "react-dom": "^16.9.0",
     "react-icons": "^2.2.7",
     "react-piano": "../",
-    "react-scripts": "3.3.0",
+    "react-scripts": "^5.0.1",
     "soundfont-player": "^0.10.6"
   },
   "scripts": {
