@@ -1,6 +1,6 @@
 import React from 'react';
 import { Piano, KeyboardShortcuts, MidiNumbers } from 'react-piano';
-import MdArrowDownward from 'react-icons/lib/md/arrow-downward';
+import { MdArrowDownward } from 'react-icons/md';
 
 import DimensionsProvider from './DimensionsProvider';
 import InstrumentListProvider from './InstrumentListProvider';
