@@ -4,7 +4,7 @@ import filesize from 'rollup-plugin-filesize';
 import nodeResolve from 'rollup-plugin-node-resolve';
 import replace from 'rollup-plugin-replace';
 import sourceMaps from 'rollup-plugin-sourcemaps';
-import pkg from './package.json';
+import pkg from './package.json' with { type: "json" };
 
 const input = 'src/index.js';
 const external = ['react'];
