@@ -1,17 +1,16 @@
 import React from 'react';
-import Dimensions from 'react-dimensions';
+import useDimensions from 'react-use-dimensions';
 
-class DimensionsProvider extends React.Component {
-  render() {
-    return (
-      <div>
-        {this.props.children({
-          containerWidth: this.props.containerWidth,
-          containerHeight: this.props.containerHeight,
-        })}
-      </div>
-    );
-  }
+const DimensionsProvider = (props) => {
+  const [ref, { width, height }] = useDimensions()
+  return (
+    <div ref={ref}>
+      {props.children({
+        containerWidth: width,
+        containerHeight: height,
+      })}
+    </div>
+  );
 }
 
-export default Dimensions()(DimensionsProvider);
+export default DimensionsProvider;
