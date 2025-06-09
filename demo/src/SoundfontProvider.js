@@ -12,6 +12,7 @@ class SoundfontProvider extends React.Component {
     soundfont: PropTypes.oneOf(['MusyngKite', 'FluidR3_GM']),
     audioContext: PropTypes.instanceOf(window.AudioContext),
     onLoad: PropTypes.func,
+    playParams: PropTypes.number,
     render: PropTypes.func,
   };
 
@@ -70,7 +71,8 @@ class SoundfontProvider extends React.Component {
 
   playNote = (midiNumber) => {
     this.resumeAudio().then(() => {
-      const audioNode = this.state.instrument.play(midiNumber);
+      const playParams = !this.props.playDuration ? [midiNumber] : [midiNumber, this.props.audioContext.currentTime, { duration: this.props.playDuration / 1000  }];
+      const audioNode = this.state.instrument.play(...playParams);
       this.setState({
         activeAudioNodes: Object.assign({}, this.state.activeAudioNodes, {
           [midiNumber]: audioNode,

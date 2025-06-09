@@ -5,6 +5,8 @@ import classNames from 'classnames';
 import DimensionsProvider from './DimensionsProvider';
 import SoundfontProvider from './SoundfontProvider';
 
+const PLAY_DURATION = 200;
+
 class PlaybackDemo extends React.Component {
   state = {
     activeNotesIndex: 0,
@@ -24,7 +26,7 @@ class PlaybackDemo extends React.Component {
           this.setState({
             activeNotesIndex: (this.state.activeNotesIndex + 1) % this.props.song.length,
           });
-        }, 200);
+        }, PLAY_DURATION);
       } else {
         clearInterval(this.playbackIntervalFn);
         this.state.stopAllNotes();
@@ -67,6 +69,7 @@ class PlaybackDemo extends React.Component {
             instrumentName="ocarina"
             hostname={this.props.soundfontHostname}
             onLoad={({ stopAllNotes }) => this.setState({ stopAllNotes })}
+            playDuration={PLAY_DURATION}
             render={({ isLoading, playNote, stopNote, stopAllNotes }) => (
               <DimensionsProvider>
                 {({ containerWidth }) => (
