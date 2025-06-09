@@ -6,7 +6,7 @@ import Footer from './Footer';
 import InteractiveDemo from './InteractiveDemo';
 import PlaybackDemo from './PlaybackDemo';
 import { lostWoods } from './songs';
-import './App.css';
+import './App.scss';
 
 const audioContext = new (window.AudioContext || window.webkitAudioContext)();
 const soundfontHostname = 'https://d1pzp51pvbm36p.cloudfront.net';
