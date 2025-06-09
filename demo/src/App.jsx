@@ -1,5 +1,6 @@
 import React from 'react';
 import 'react-piano/dist/styles.css';
+import 'bootstrap/dist/css/bootstrap.min.css'
 
 import Header from './Header';
 import Footer from './Footer';
