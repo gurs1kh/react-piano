@@ -1,33 +1,39 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import range from 'just-range';
 import classNames from 'classnames';
 
 import Key from './Key';
 import MidiNumbers from './MidiNumbers';
 
-class Keyboard extends React.Component {
-  static propTypes = {
-    noteRange: noteRangePropType,
-    activeNotes: PropTypes.arrayOf(PropTypes.number),
-    onPlayNoteInput: PropTypes.func.isRequired,
-    onStopNoteInput: PropTypes.func.isRequired,
-    renderNoteLabel: PropTypes.func.isRequired,
-    keyWidthToHeight: PropTypes.number.isRequired,
-    className: PropTypes.string,
-    disabled: PropTypes.bool,
-    gliss: PropTypes.bool,
-    useTouchEvents: PropTypes.bool,
-    // If width is not provided, must have fixed width and height in parent container
-    width: PropTypes.number,
+export interface KeyboardProps {
+  noteRange: {
+    first: number;
+    last: number;
   };
+  activeNotes: number[];
+  onPlayNoteInput: (midiNumber: number) => void;
+  onStopNoteInput: (midiNumber: number) => void;
+  renderNoteLabel: (params: {
+    isActive: boolean;
+    isAccidental: boolean;
+    midiNumber: number;
+  }) => React.ReactNode;
+  keyWidthToHeight?: number;
+  className?: string;
+  disabled?: boolean;
+  gliss?: boolean;
+  useTouchEvents?: boolean;
+  width?: number;
+}
 
+export class Keyboard extends React.Component<KeyboardProps> {
   static defaultProps = {
     disabled: false,
     gliss: false,
     useTouchEvents: false,
     keyWidthToHeight: 0.33,
-    renderNoteLabel: () => {},
+    renderNoteLabel: () => null,
+    activeNotes: [],
   };
 
   // Range of midi numbers on keyboard
@@ -36,7 +42,7 @@ class Keyboard extends React.Component {
   }
 
   getNaturalKeyCount() {
-    return this.getMidiNumbers().filter((number) => {
+    return this.getMidiNumbers().filter((number: number) => {
       const { isAccidental } = MidiNumbers.getAttributes(number);
       return !isAccidental;
     }).length;
@@ -56,7 +62,7 @@ class Keyboard extends React.Component {
       return '100%';
     }
     const keyWidth = this.props.width * this.getNaturalKeyWidth();
-    return `${keyWidth / this.props.keyWidthToHeight}px`;
+    return `${keyWidth / (this.props.keyWidthToHeight || 0.33)}px`;
   }
 
   render() {
@@ -66,9 +72,10 @@ class Keyboard extends React.Component {
         className={classNames('ReactPiano__Keyboard', this.props.className)}
         style={{ width: this.getWidth(), height: this.getHeight() }}
       >
-        {this.getMidiNumbers().map((midiNumber) => {
-          const { note, isAccidental } = MidiNumbers.getAttributes(midiNumber);
-          const isActive = !this.props.disabled && this.props.activeNotes.includes(midiNumber);
+        {this.getMidiNumbers().map((midiNumber: number) => {
+          const { isAccidental } = MidiNumbers.getAttributes(midiNumber);
+          const isActive =
+            !this.props.disabled && this.props.activeNotes.includes(midiNumber);
           return (
             <Key
               naturalKeyWidth={naturalKeyWidth}
@@ -94,32 +101,6 @@ class Keyboard extends React.Component {
           );
         })}
       </div>
-    );
-  }
-}
-
-function isNaturalMidiNumber(value) {
-  if (typeof value !== 'number') {
-    return false;
-  }
-  return MidiNumbers.NATURAL_MIDI_NUMBERS.includes(value);
-}
-
-function noteRangePropType(props, propName, componentName) {
-  const { first, last } = props[propName];
-  if (!first || !last) {
-    return new Error(
-      `Invalid prop ${propName} supplied to ${componentName}. ${propName} must be an object with .first and .last values.`,
-    );
-  }
-  if (!isNaturalMidiNumber(first) || !isNaturalMidiNumber(last)) {
-    return new Error(
-      `Invalid prop ${propName} supplied to ${componentName}. ${propName} values must be valid MIDI numbers, and should not be accidentals (sharp or flat notes).`,
-    );
-  }
-  if (first >= last) {
-    return new Error(
-      `Invalid prop ${propName} supplied to ${componentName}. ${propName}.first must be smaller than ${propName}.last.`,
     );
   }
 }

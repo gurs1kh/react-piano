@@ -1,25 +1,29 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import classNames from 'classnames';
 
 import MidiNumbers from './MidiNumbers';
 
-class Key extends React.Component {
-  static propTypes = {
-    midiNumber: PropTypes.number.isRequired,
-    naturalKeyWidth: PropTypes.number.isRequired, // Width as a ratio between 0 and 1
-    gliss: PropTypes.bool.isRequired,
-    useTouchEvents: PropTypes.bool.isRequired,
-    accidental: PropTypes.bool.isRequired,
-    active: PropTypes.bool.isRequired,
-    disabled: PropTypes.bool.isRequired,
-    onPlayNoteInput: PropTypes.func.isRequired,
-    onStopNoteInput: PropTypes.func.isRequired,
-    accidentalWidthRatio: PropTypes.number.isRequired,
-    pitchPositions: PropTypes.object.isRequired,
-    children: PropTypes.node,
-  };
+export interface KeyProps {
+  midiNumber: number;
+  naturalKeyWidth: number; // Width as a ratio between 0 and 1
+  gliss?: boolean;
+  useTouchEvents?: boolean;
+  accidental?: boolean;
+  active?: boolean;
+  disabled?: boolean;
+  onPlayNoteInput: (midiNumber: number) => void;
+  onStopNoteInput: (midiNumber: number) => void;
+  accidentalWidthRatio?: number;
+  pitchPositions?: { [pitch: string]: number };
+  noteRange: { first: number; last: number };
+  children?: React.ReactNode;
+}
 
+function ratioToPercentage(ratio: number) {
+  return `${ratio * 100}%`;
+}
+
+export class Key extends React.Component<KeyProps> {
   static defaultProps = {
     accidentalWidthRatio: 0.65,
     pitchPositions: {
@@ -47,15 +51,16 @@ class Key extends React.Component {
   };
 
   // Key position is represented by the number of natural key widths from the left
-  getAbsoluteKeyPosition(midiNumber) {
+  getAbsoluteKeyPosition(midiNumber: number) {
     const OCTAVE_WIDTH = 7;
     const { octave, pitchName } = MidiNumbers.getAttributes(midiNumber);
-    const pitchPosition = this.props.pitchPositions[pitchName];
+    const pitchPositions = this.props.pitchPositions || Key.defaultProps.pitchPositions;
+    const pitchPosition = pitchPositions[pitchName as keyof typeof pitchPositions];
     const octavePosition = OCTAVE_WIDTH * octave;
     return pitchPosition + octavePosition;
   }
 
-  getRelativeKeyPosition(midiNumber) {
+  getRelativeKeyPosition(midiNumber: number) {
     return (
       this.getAbsoluteKeyPosition(midiNumber) -
       this.getAbsoluteKeyPosition(this.props.noteRange.first)
@@ -65,7 +70,7 @@ class Key extends React.Component {
   render() {
     const {
       naturalKeyWidth,
-      accidentalWidthRatio,
+      accidentalWidthRatio = 0.65,
       midiNumber,
       gliss,
       useTouchEvents,
@@ -91,22 +96,18 @@ class Key extends React.Component {
             accidental ? accidentalWidthRatio * naturalKeyWidth : naturalKeyWidth,
           ),
         }}
-        onMouseDown={useTouchEvents ? null : this.onPlayNoteInput}
-        onMouseUp={useTouchEvents ? null : this.onStopNoteInput}
-        onMouseEnter={gliss ? this.onPlayNoteInput : null}
+        onMouseDown={useTouchEvents ? undefined : this.onPlayNoteInput}
+        onMouseUp={useTouchEvents ? undefined : this.onStopNoteInput}
+        onMouseEnter={gliss ? this.onPlayNoteInput : undefined}
         onMouseLeave={this.onStopNoteInput}
-        onTouchStart={useTouchEvents ? this.onPlayNoteInput : null}
-        onTouchCancel={useTouchEvents ? this.onStopNoteInput : null}
-        onTouchEnd={useTouchEvents ? this.onStopNoteInput : null}
+        onTouchStart={useTouchEvents ? this.onPlayNoteInput : undefined}
+        onTouchCancel={useTouchEvents ? this.onStopNoteInput : undefined}
+        onTouchEnd={useTouchEvents ? this.onStopNoteInput : undefined}
       >
         <div className="ReactPiano__NoteLabelContainer">{children}</div>
       </div>
     );
   }
-}
-
-function ratioToPercentage(ratio) {
-  return `${ratio * 100}%`;
 }
 
 export default Key;
