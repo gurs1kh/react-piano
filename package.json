@@ -39,6 +39,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@types/lodash.difference": "^4.5.9",
     "classnames": "^2.5.1",
     "just-range": "^4.2.0",
     "lodash.difference": "^4.5.0",

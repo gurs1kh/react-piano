@@ -1,36 +1,25 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-import classNames from 'classnames';
-import difference from 'lodash.difference';
-import ControlledPiano from './ControlledPiano';
-import Keyboard from './Keyboard';
+import ControlledPiano, { ControlledPianoProps } from './ControlledPiano';
 
-class Piano extends React.Component {
-  static propTypes = {
-    noteRange: PropTypes.object.isRequired,
-    activeNotes: PropTypes.arrayOf(PropTypes.number.isRequired),
-    playNote: PropTypes.func.isRequired,
-    stopNote: PropTypes.func.isRequired,
-    onPlayNoteInput: PropTypes.func,
-    onStopNoteInput: PropTypes.func,
-    renderNoteLabel: PropTypes.func,
-    className: PropTypes.string,
-    disabled: PropTypes.bool,
-    width: PropTypes.number,
-    keyWidthToHeight: PropTypes.number,
-    keyboardShortcuts: PropTypes.arrayOf(
-      PropTypes.shape({
-        key: PropTypes.string.isRequired,
-        midiNumber: PropTypes.number.isRequired,
-      }),
-    ),
-  };
+export interface PianoProps extends Omit<ControlledPianoProps, 'activeNotes' | 'onPlayNoteInput' | 'onStopNoteInput'> {
+  activeNotes?: number[];
+  onPlayNoteInput?: (midiNumber: number, options: { prevActiveNotes: number[] }) => void;
+  onStopNoteInput?: (midiNumber: number, options: { prevActiveNotes: number[] }) => void;
+}
 
-  state = {
-    activeNotes: this.props.activeNotes || [],
-  };
+interface PianoState {
+  activeNotes: number[];
+}
 
-  componentDidUpdate(prevProps) {
+class Piano extends React.Component<PianoProps, PianoState> {
+  constructor(props: PianoProps) {
+    super(props);
+    this.state = {
+      activeNotes: props.activeNotes || [],
+    };
+  }
+
+  componentDidUpdate(prevProps: PianoProps) {
     // Make activeNotes "controllable" by using internal
     // state by default, but allowing prop overrides.
     if (
@@ -43,15 +32,11 @@ class Piano extends React.Component {
     }
   }
 
-  handlePlayNoteInput = (midiNumber) => {
+  handlePlayNoteInput = (midiNumber: number) => {
     this.setState((prevState) => {
-      // Need to be handled inside setState in order to set prevActiveNotes without
-      // race conditions.
       if (this.props.onPlayNoteInput) {
         this.props.onPlayNoteInput(midiNumber, { prevActiveNotes: prevState.activeNotes });
       }
-
-      // Don't append note to activeNotes if it's already present
       if (prevState.activeNotes.includes(midiNumber)) {
         return null;
       }
@@ -61,10 +46,8 @@ class Piano extends React.Component {
     });
   };
 
-  handleStopNoteInput = (midiNumber) => {
+  handleStopNoteInput = (midiNumber: number) => {
     this.setState((prevState) => {
-      // Need to be handled inside setState in order to set prevActiveNotes without
-      // race conditions.
       if (this.props.onStopNoteInput) {
         this.props.onStopNoteInput(midiNumber, { prevActiveNotes: this.state.activeNotes });
       }
@@ -75,6 +58,7 @@ class Piano extends React.Component {
   };
 
   render() {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { activeNotes, onPlayNoteInput, onStopNoteInput, ...otherProps } = this.props;
     return (
       <ControlledPiano
