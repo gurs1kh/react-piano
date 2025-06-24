@@ -34,7 +34,7 @@ const NOTES_IN_OCTAVE = 12;
 // References:
 // - http://www.flutopedia.com/octave_notation.htm
 // - https://github.com/danigb/tonal/blob/master/packages/note/index.js
-function fromNote(note) {
+function fromNote(note: string) {
   if (!note) {
     throw Error('Invalid note argument');
   }
@@ -44,7 +44,7 @@ function fromNote(note) {
   }
   const [, letter, accidental, octave] = match;
   const pitchName = `${letter.toUpperCase()}${accidental}`;
-  const pitchIndex = PITCH_INDEXES[pitchName];
+  const pitchIndex = PITCH_INDEXES[pitchName as keyof typeof PITCH_INDEXES];
   if (pitchIndex == null) {
     throw Error('Invalid note argument');
   }
@@ -54,7 +54,7 @@ function fromNote(note) {
 //
 // Build cache for getAttributes
 //
-function buildMidiNumberAttributes(midiNumber) {
+function buildMidiNumberAttributes(midiNumber: number) {
   const pitchIndex = (midiNumber - MIDI_NUMBER_C0) % NOTES_IN_OCTAVE;
   const octave = Math.floor((midiNumber - MIDI_NUMBER_C0) / NOTES_IN_OCTAVE);
   const pitchName = SORTED_PITCHES[pitchIndex];
@@ -71,14 +71,14 @@ function buildMidiNumberAttributesCache() {
   return range(MIN_MIDI_NUMBER, MAX_MIDI_NUMBER + 1).reduce((cache, midiNumber) => {
     cache[midiNumber] = buildMidiNumberAttributes(midiNumber);
     return cache;
-  }, {});
+  }, {} as Record<number, ReturnType<typeof buildMidiNumberAttributes>>);
 }
 
 const midiNumberAttributesCache = buildMidiNumberAttributesCache();
 
 // Returns an object containing various attributes for a given MIDI number.
 // Throws error for invalid midiNumbers.
-function getAttributes(midiNumber) {
+function getAttributes(midiNumber: number) {
   const attrs = midiNumberAttributesCache[midiNumber];
   if (!attrs) {
     throw Error('Invalid MIDI number');

@@ -1,9 +1,19 @@
 import MidiNumbers from './MidiNumbers';
 
-function createKeyboardShortcuts({ firstNote, lastNote, keyboardConfig }) {
+interface CreateKeyboardShortcutsProps {
+  firstNote: number;
+  lastNote: number;
+  keyboardConfig: Array<{
+    natural: string;
+    flat: string;
+    sharp: string;
+  }>;
+}
+
+function createKeyboardShortcuts({ firstNote, lastNote, keyboardConfig }: CreateKeyboardShortcutsProps) {
   let currentMidiNumber = firstNote;
   let naturalKeyIndex = 0;
-  let keyboardShortcuts = [];
+  const keyboardShortcuts = [];
 
   while (
     // There are still keys to be assigned
@@ -23,9 +33,9 @@ function createKeyboardShortcuts({ firstNote, lastNote, keyboardConfig }) {
         key: key.natural,
         midiNumber: currentMidiNumber,
       });
-      naturalKeyIndex += 1;
+      naturalKeyIndex++;
     }
-    currentMidiNumber += 1;
+    currentMidiNumber++;
   }
   return keyboardShortcuts;
 }
