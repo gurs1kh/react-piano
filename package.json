@@ -1,27 +1,9 @@
 {
   "name": "react-piano",
   "version": "3.1.3",
+  "type": "module",
   "packageManager": "yarn@1.22.22",
   "description": "A responsive, customizable react piano keyboard component",
-  "main": "dist/react-piano.cjs.js",
-  "module": "dist/react-piano.esm.js",
-  "unpkg": "dist/react-piano.umd.js",
-  "style": "dist/styles.css",
-  "files": [
-    "dist"
-  ],
-  "scripts": {
-    "build": "npm-run-all clean build:css build:js",
-    "build:css": "postcss src/styles.css --use autoprefixer -d dist/ --no-map",
-    "build:js": "rollup -c",
-    "clean": "rimraf dist",
-    "format": "prettier --write 'src/**/*' 'demo/src/**/*'",
-    "prepare": "npm run build",
-    "start": "npm-run-all --parallel start:js start:css",
-    "start:js": "rollup -c -w",
-    "start:css": "postcss src/styles.css --use autoprefixer -d dist/ --no-map --watch",
-    "test": "jest --config jest.config.json --coverage"
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/kevinsqi/react-piano.git"
@@ -38,40 +20,53 @@
     "url": "https://github.com/kevinsqi/react-piano/issues"
   },
   "homepage": "https://github.com/kevinsqi/react-piano",
-  "devDependencies": {
-    "@babel/core": "^7.0.0",
-    "@babel/plugin-proposal-class-properties": "^7.0.0",
-    "@babel/preset-env": "^7.0.0",
-    "@babel/preset-react": "^7.0.0",
-    "autoprefixer": "^10.4.21",
-    "babel-core": "^7.0.0-0",
-    "babel-jest": "^30.0.0-beta.3",
-    "enzyme": "^3.5.0",
-    "enzyme-adapter-react-16": "^1.3.1",
-    "jest": "^29.7.0",
-    "npm-run-all": "^4.1.3",
-    "postcss": "^8.5.4",
-    "postcss-cli": "^11.0.1",
-    "prettier": "^3.5.3",
-    "react": "^19.1.0",
-    "react-dom": "^19.1.0",
-    "react-test-renderer": "^19.1.0",
-    "rimraf": "^6.0.1",
-    "rollup": "^4.41.1",
-    "rollup-plugin-babel": "^4.0.2",
-    "rollup-plugin-commonjs": "^10.1.0",
-    "rollup-plugin-filesize": "^10.0.0",
-    "rollup-plugin-node-resolve": "^5.2.0",
-    "rollup-plugin-replace": "^2.0.0",
-    "rollup-plugin-sourcemaps": "^0.6.3"
-  },
-  "peerDependencies": {
-    "react": "*"
+  "main": "dist/react-piano.js",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "npm-run-all clean build:js build:css",
+    "build:css": "postcss src/styles.css --use autoprefixer -d dist/ --no-map",
+    "build:js": "tsc -b && vite build",
+    "clean": "rimraf dist",
+    "format": "prettier --write 'src/**/*' 'demo/src/**/*'",
+    "prepare": "npm run build",
+    "dev": "npm-run-all --parallel dev:js dev:css",
+    "dev:js": "vite",
+    "dev:css": "postcss src/styles.css --use autoprefixer -d dist/ --no-map --watch",
+    "test": "jest --config jest.config.json --coverage",
+    "lint": "eslint .",
+    "preview": "vite preview"
   },
   "dependencies": {
-    "classnames": "^2.2.6",
-    "just-range": "^2.1.0",
+    "classnames": "^2.5.1",
+    "just-range": "^4.2.0",
     "lodash.difference": "^4.5.0",
-    "prop-types": "^15.6.2"
+    "prop-types": "^15.8.1",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.29.0",
+    "@types/react": "^19.1.8",
+    "@types/react-dom": "^19.1.6",
+    "@vitejs/plugin-react": "^4.5.2",
+    "autoprefixer": "^10.4.21",
+    "enzyme": "^3.11.0",
+    "enzyme-adapter-react-16": "^1.15.8",
+    "eslint": "^9.29.0",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "eslint-plugin-react-refresh": "^0.4.20",
+    "globals": "^16.2.0",
+    "jest": "^30.0.2",
+    "npm-run-all": "^4.1.5",
+    "postcss": "^8.5.6",
+    "postcss-cli": "^11.0.1",
+    "prettier": "^3.6.0",
+    "react-test-renderer": "^19.1.0",
+    "rimraf": "^6.0.1",
+    "typescript": "~5.8.3",
+    "typescript-eslint": "^8.34.1",
+    "vite": "^7.0.0"
   }
 }
