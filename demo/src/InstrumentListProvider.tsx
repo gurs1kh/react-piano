@@ -1,18 +1,17 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 
-class InstrumentListProvider extends React.Component {
-  static propTypes = {
-    hostname: PropTypes.string.isRequired,
-    soundfont: PropTypes.oneOf(['MusyngKite', 'FluidR3_GM']),
-    render: PropTypes.func,
-  };
+export interface InstrumentListProviderProps {
+  hostname: string;
+  soundfont?: 'MusyngKite' | 'FluidR3_GM';
+  render: (instrumentList: any) => React.ReactNode;
+}
 
+class InstrumentListProvider extends React.Component<InstrumentListProviderProps> {
   static defaultProps = {
     soundfont: 'MusyngKite',
   };
 
-  state = {
+  state  = {
     instrumentList: null,
   };
 
