@@ -1,40 +1,50 @@
 // See https://github.com/danigb/soundfont-player
 // for more documentation on prop options.
 import React from 'react';
-import PropTypes from 'prop-types';
-import Soundfont from 'soundfont-player';
+import Soundfont, { InstrumentName, Player } from 'soundfont-player';
 
-class SoundfontProvider extends React.Component {
-  static propTypes = {
-    instrumentName: PropTypes.string.isRequired,
-    hostname: PropTypes.string.isRequired,
-    format: PropTypes.oneOf(['mp3', 'ogg']),
-    soundfont: PropTypes.oneOf(['MusyngKite', 'FluidR3_GM']),
-    audioContext: PropTypes.instanceOf(window.AudioContext),
-    onLoad: PropTypes.func,
-    playParams: PropTypes.number,
-    render: PropTypes.func,
-  };
+export interface SoundfontProviderProps {
+  instrumentName: InstrumentName;
+  hostname: string;
+  format?: 'mp3' | 'ogg';
+  soundfont?: 'MusyngKite' | 'FluidR3_GM';
+  audioContext: AudioContext;
+  onLoad?: (api: {
+    playNote: (midiNumber: number) => void;
+    stopNote: (midiNumber: number) => void;
+    stopAllNotes: () => void;
+  }) => void;
+  playDuration?: number;
+  render?: (api: {
+    isLoading: boolean;
+    playNote: (midiNumber: number) => void;
+    stopNote: (midiNumber: number) => void;
+    stopAllNotes: () => void;
+  }) => React.ReactNode;
+}
 
+interface SoundfontProviderState {
+  activeAudioNodes: { [midiNumber: number]: any };
+  instrument?: Player;
+}
+
+class SoundfontProvider extends React.Component<SoundfontProviderProps> {
   static defaultProps = {
-    format: 'mp3',
-    soundfont: 'MusyngKite',
+    format: 'mp3' as const,
+    soundfont: 'MusyngKite' as const,
     instrumentName: 'acoustic_grand_piano',
   };
 
-  constructor(props) {
-    super(props);
-    this.state = {
-      activeAudioNodes: {},
-      instrument: null,
-    };
-  }
+  state: SoundfontProviderState = {
+    activeAudioNodes: {},
+    instrument: undefined,
+  };
 
   componentDidMount() {
     this.loadInstrument(this.props.instrumentName);
   }
 
-  componentDidUpdate(prevProps, prevState) {
+  componentDidUpdate(prevProps: SoundfontProviderProps, prevState: SoundfontProviderState) {
     if (prevProps.instrumentName !== this.props.instrumentName) {
       this.loadInstrument(this.props.instrumentName);
     }
@@ -51,7 +61,7 @@ class SoundfontProvider extends React.Component {
     }
   }
 
-  loadInstrument = (instrumentName) => {
+  loadInstrument = (instrumentName: InstrumentName) => {
     // Re-trigger loading state
     this.setState({
       instrument: null,
@@ -59,20 +69,23 @@ class SoundfontProvider extends React.Component {
     Soundfont.instrument(this.props.audioContext, instrumentName, {
       format: this.props.format,
       soundfont: this.props.soundfont,
-      nameToUrl: (name, soundfont, format) => {
+      nameToUrl: (name: string, soundfont: string, format: string) => {
         return `${this.props.hostname}/${soundfont}/${name}-${format}.js`;
       },
-    }).then((instrument) => {
+    }).then((instrument: any) => {
       this.setState({
         instrument,
       });
     });
   };
 
-  playNote = (midiNumber) => {
+  playNote = (midiNumber: number) => {
     this.resumeAudio().then(() => {
-      const playParams = !this.props.playDuration ? [midiNumber] : [midiNumber, this.props.audioContext.currentTime, { duration: this.props.playDuration / 1000  }];
-      const audioNode = this.state.instrument.play(...playParams);
+      const playParams: Parameters<Player["start"]> = !this.props.playDuration
+        ? [String(midiNumber)]
+        : [String(midiNumber), this.props.audioContext.currentTime, { duration: this.props.playDuration / 1000 }];
+        
+      const audioNode = this.state.instrument?.play(...playParams);
       this.setState({
         activeAudioNodes: Object.assign({}, this.state.activeAudioNodes, {
           [midiNumber]: audioNode,
@@ -81,13 +94,15 @@ class SoundfontProvider extends React.Component {
     });
   };
 
-  stopNote = (midiNumber) => {
+  stopNote = (midiNumber: number) => {
     this.resumeAudio().then(() => {
       if (!this.state.activeAudioNodes[midiNumber]) {
         return;
       }
       const audioNode = this.state.activeAudioNodes[midiNumber];
-      audioNode.stop();
+      if (audioNode) {
+        audioNode.stop();
+      }
       this.setState({
         activeAudioNodes: Object.assign({}, this.state.activeAudioNodes, { [midiNumber]: null }),
       });
