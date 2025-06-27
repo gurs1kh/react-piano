@@ -1,15 +1,34 @@
 import React from 'react';
 import { MidiNumbers } from 'react-piano';
+import { InstrumentName } from 'soundfont-player';
 
-class AutoblurSelect extends React.Component {
-  constructor(props) {
-    super(props);
-    this.selectRef = React.createRef();
-  }
+interface PianoConfigProps {
+  config: {
+    noteRange: {
+      first: number;
+      last: number;
+    };
+    instrumentName: InstrumentName;
+    keyboardShortcutOffset: number;
+  };
+  setConfig: (config: Partial<PianoConfigProps['config']>) => void;
+  instrumentList: string[];
+  keyboardShortcuts: any[];
+}
 
-  onChange = (event) => {
+interface AutoblurSelectProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
+  onChange: (event: React.ChangeEvent<HTMLSelectElement>) => void;
+  children: React.ReactNode;
+}
+
+class AutoblurSelect extends React.Component<AutoblurSelectProps> {
+  selectRef = React.createRef<HTMLSelectElement>();
+
+  onChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     this.props.onChange(event);
-    this.selectRef.current.blur();
+    if (this.selectRef.current) {
+      this.selectRef.current.blur();
+    }
   };
 
   render() {
@@ -22,11 +41,11 @@ class AutoblurSelect extends React.Component {
   }
 }
 
-function Label(props) {
-  return <small className="mb-1 text-muted">{props.children}</small>;
-}
+const Label: React.FC<{ children: React.ReactNode }> = (props) => (
+  <small className="mb-1 text-muted">{props.children}</small>
+);
 
-class PianoConfig extends React.Component {
+class PianoConfig extends React.Component<PianoConfigProps> {
   componentDidMount() {
     window.addEventListener('keydown', this.handleKeyDown);
   }
@@ -35,8 +54,9 @@ class PianoConfig extends React.Component {
     window.removeEventListener('keydown', this.handleKeyDown);
   }
 
-  handleKeyDown = (event) => {
-    const numNotes = this.props.config.noteRange.last - this.props.config.noteRange.first + 1;
+  handleKeyDown = (event: KeyboardEvent) => {
+    const numNotes =
+      this.props.config.noteRange.last - this.props.config.noteRange.first + 1;
     const minOffset = 0;
     const maxOffset = numNotes - this.props.keyboardShortcuts.length;
     if (event.key === 'ArrowLeft') {
@@ -56,7 +76,7 @@ class PianoConfig extends React.Component {
     }
   };
 
-  onChangeFirstNote = (event) => {
+  onChangeFirstNote = (event: React.ChangeEvent<HTMLSelectElement>) => {
     this.props.setConfig({
       noteRange: {
         first: parseInt(event.target.value, 10),
@@ -65,7 +85,7 @@ class PianoConfig extends React.Component {
     });
   };
 
-  onChangeLastNote = (event) => {
+  onChangeLastNote = (event: React.ChangeEvent<HTMLSelectElement>) => {
     this.props.setConfig({
       noteRange: {
         first: this.props.config.noteRange.first,
@@ -74,17 +94,20 @@ class PianoConfig extends React.Component {
     });
   };
 
-  onChangeInstrument = (event) => {
+  onChangeInstrument = (event: React.ChangeEvent<HTMLSelectElement>) => {
     this.props.setConfig({
-      instrumentName: event.target.value,
+      instrumentName: event.target.value as InstrumentName,
     });
   };
 
   render() {
-    const midiNumbersToNotes = MidiNumbers.NATURAL_MIDI_NUMBERS.reduce((obj, midiNumber) => {
-      obj[midiNumber] = MidiNumbers.getAttributes(midiNumber).note;
-      return obj;
-    }, {});
+    const midiNumbersToNotes: { [midi: number]: string } = MidiNumbers.NATURAL_MIDI_NUMBERS.reduce(
+      (obj: { [midi: number]: string }, midiNumber: number) => {
+        obj[midiNumber] = MidiNumbers.getAttributes(midiNumber).note;
+        return obj;
+      },
+      {}
+    );
     const { noteRange, instrumentName } = this.props.config;
 
     return (
@@ -96,7 +119,7 @@ class PianoConfig extends React.Component {
             onChange={this.onChangeFirstNote}
             value={noteRange.first}
           >
-            {MidiNumbers.NATURAL_MIDI_NUMBERS.map((midiNumber) => (
+            {MidiNumbers.NATURAL_MIDI_NUMBERS.map((midiNumber: number) => (
               <option value={midiNumber} disabled={midiNumber >= noteRange.last} key={midiNumber}>
                 {midiNumbersToNotes[midiNumber]}
               </option>
@@ -110,7 +133,7 @@ class PianoConfig extends React.Component {
             onChange={this.onChangeLastNote}
             value={noteRange.last}
           >
-            {MidiNumbers.NATURAL_MIDI_NUMBERS.map((midiNumber) => (
+            {MidiNumbers.NATURAL_MIDI_NUMBERS.map((midiNumber: number) => (
               <option value={midiNumber} disabled={midiNumber <= noteRange.first} key={midiNumber}>
                 {midiNumbersToNotes[midiNumber]}
               </option>
