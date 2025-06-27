@@ -7,28 +7,32 @@ import SoundfontProvider from './SoundfontProvider';
 
 const PLAY_DURATION = 200;
 
-class PlaybackDemo extends React.Component {
+interface PlaybackDemoProps {
+  audioContext: AudioContext;
+  soundfontHostname: string;
+  song: number[][];
+}
+class PlaybackDemo extends React.Component<PlaybackDemoProps> {
+  playbackIntervalFn: NodeJS.Timeout | null = null;
+
   state = {
     activeNotesIndex: 0,
     isPlaying: false,
     stopAllNotes: () => console.warn('stopAllNotes not yet loaded'),
   };
 
-  constructor(props) {
-    super(props);
-    this.playbackIntervalFn = null;
-  }
-
-  componentDidUpdate(prevProps, prevState) {
+  componentDidUpdate(_prevProps: PlaybackDemoProps, prevState: typeof this.state) {
     if (prevState.isPlaying !== this.state.isPlaying) {
       if (this.state.isPlaying) {
         this.playbackIntervalFn = setInterval(() => {
-          this.setState({
-            activeNotesIndex: (this.state.activeNotesIndex + 1) % this.props.song.length,
-          });
+          this.setState((state: typeof this.state, props) => ({
+            activeNotesIndex: (state.activeNotesIndex + 1) % props.song.length,
+          }));
         }, PLAY_DURATION);
       } else {
-        clearInterval(this.playbackIntervalFn);
+        if (this.playbackIntervalFn) {
+          clearInterval(this.playbackIntervalFn);
+        }
         this.state.stopAllNotes();
         this.setState({
           activeNotesIndex: 0,
@@ -37,7 +41,14 @@ class PlaybackDemo extends React.Component {
     }
   }
 
-  setPlaying = (value) => {
+  componentWillUnmount() {
+    if (this.playbackIntervalFn) {
+      clearInterval(this.playbackIntervalFn);
+    }
+    this.state.stopAllNotes();
+  }
+
+  setPlaying = (value: boolean) => {
     this.setState({ isPlaying: value });
   };
 
@@ -70,7 +81,7 @@ class PlaybackDemo extends React.Component {
             hostname={this.props.soundfontHostname}
             onLoad={({ stopAllNotes }) => this.setState({ stopAllNotes })}
             playDuration={PLAY_DURATION}
-            render={({ isLoading, playNote, stopNote, stopAllNotes }) => (
+            render={({ isLoading, playNote, stopNote }) => (
               <DimensionsProvider>
                 {({ containerWidth }) => (
                   <Piano
