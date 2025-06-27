@@ -1,5 +1,6 @@
 import React from 'react';
 import { MidiNumbers } from 'react-piano';
+import AutoblurSelect from './AutoBlurSelect';
 
 interface PianoConfigProps {
   config: {
@@ -14,35 +15,6 @@ interface PianoConfigProps {
   instrumentList: string[];
   keyboardShortcuts: any[];
 }
-
-interface AutoblurSelectProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
-  onChange: (event: React.ChangeEvent<HTMLSelectElement>) => void;
-  children: React.ReactNode;
-}
-
-class AutoblurSelect extends React.Component<AutoblurSelectProps> {
-  selectRef = React.createRef<HTMLSelectElement>();
-
-  onChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    this.props.onChange(event);
-    if (this.selectRef.current) {
-      this.selectRef.current.blur();
-    }
-  };
-
-  render() {
-    const { children, onChange, ...otherProps } = this.props;
-    return (
-      <select {...otherProps} onChange={this.onChange} ref={this.selectRef}>
-        {children}
-      </select>
-    );
-  }
-}
-
-const Label: React.FC<{ children: React.ReactNode }> = (props) => (
-  <small className="mb-1 text-muted">{props.children}</small>
-);
 
 class PianoConfig extends React.Component<PianoConfigProps> {
   componentDidMount() {
@@ -112,7 +84,7 @@ class PianoConfig extends React.Component<PianoConfigProps> {
     return (
       <div className="form-row">
         <div className="col-3">
-          <Label>First note</Label>
+          <small className="mb-1 text-muted">First note</small>
           <AutoblurSelect
             className="form-control"
             onChange={this.onChangeFirstNote}
@@ -126,7 +98,7 @@ class PianoConfig extends React.Component<PianoConfigProps> {
           </AutoblurSelect>
         </div>
         <div className="col-3">
-          <Label>Last note</Label>
+          <small className="mb-1 text-muted">Last note</small>
           <AutoblurSelect
             className="form-control"
             onChange={this.onChangeLastNote}
@@ -140,7 +112,7 @@ class PianoConfig extends React.Component<PianoConfigProps> {
           </AutoblurSelect>
         </div>
         <div className="col-6">
-          <Label>Instrument</Label>
+          <small className="mb-1 text-muted">Instrument</small>
           <AutoblurSelect
             className="form-control"
             value={instrumentName}
