@@ -6,11 +6,17 @@ import DimensionsProvider from './DimensionsProvider';
 import InstrumentListProvider from './InstrumentListProvider';
 import SoundfontProvider from './SoundfontProvider';
 import PianoConfig from './PianoConfig';
+import { InstrumentName } from 'soundfont-player';
 
-class InteractiveDemo extends React.Component {
-  state = {
+interface InteractiveDemoProps {
+  audioContext: AudioContext;
+  soundfontHostname: string;
+}
+
+class InteractiveDemo extends React.Component<InteractiveDemoProps> {
+  state  = {
     config: {
-      instrumentName: 'acoustic_grand_piano',
+      instrumentName: 'acoustic_grand_piano' as InstrumentName,
       noteRange: {
         first: MidiNumbers.fromNote('c3'),
         last: MidiNumbers.fromNote('f5'),
