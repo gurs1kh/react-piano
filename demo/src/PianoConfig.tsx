@@ -28,20 +28,26 @@ const PianoConfig: React.FC<PianoConfigProps> = (props: PianoConfigProps) => {
 
   const handleKeyDown = useCallback(
     (event: KeyboardEvent) => {
+      const delta = {
+        ArrowLeft: -1,
+        ArrowRight: 1,
+      }[event.key] || 0;
+
+      if (delta === 0) return;
+
       const numNotes = noteRange.last - noteRange.first + 1;
       const minOffset = 0;
       const maxOffset = numNotes - keyboardShortcuts.length;
-      if (event.key === 'ArrowLeft') {
-        const reducedOffset = keyboardShortcutOffset - 1;
-        if (reducedOffset >= minOffset) {
-          onChangeKeyboardShortcutOffset(reducedOffset);
-        }
-      } else if (event.key === 'ArrowRight') {
-        const increasedOffset = keyboardShortcutOffset + 1;
-        if (increasedOffset <= maxOffset) {
-          onChangeKeyboardShortcutOffset(increasedOffset);
-        }
-      }
+
+      const newOffset = Math.max(
+        minOffset,
+        Math.min(
+          maxOffset,
+          keyboardShortcutOffset + delta
+        )
+      );
+
+      onChangeKeyboardShortcutOffset(newOffset);
     },
     [noteRange, keyboardShortcutOffset, keyboardShortcuts]
   );
