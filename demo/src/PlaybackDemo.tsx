@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Piano, MidiNumbers } from 'react-piano';
 import classNames from 'classnames';
 
@@ -12,96 +12,90 @@ interface PlaybackDemoProps {
   soundfontHostname: string;
   song: number[][];
 }
-class PlaybackDemo extends React.Component<PlaybackDemoProps> {
-  playbackIntervalFn: NodeJS.Timeout | null = null;
 
-  state = {
-    activeNotesIndex: 0,
-    isPlaying: false,
-    stopAllNotes: () => console.warn('stopAllNotes not yet loaded'),
-  };
+const PlaybackDemo: React.FC<PlaybackDemoProps> = ({ audioContext, soundfontHostname, song }) => {
+  const [activeNotesIndex, setActiveNotesIndex] = useState(0);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [stopAllNotes, setStopAllNotes] = useState<() => void>(() => () => console.warn('stopAllNotes not yet loaded'));
+  const playbackIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
-  componentDidUpdate(_prevProps: PlaybackDemoProps, prevState: typeof this.state) {
-    if (prevState.isPlaying !== this.state.isPlaying) {
-      if (this.state.isPlaying) {
-        this.playbackIntervalFn = setInterval(() => {
-          this.setState((state: typeof this.state, props) => ({
-            activeNotesIndex: (state.activeNotesIndex + 1) % props.song.length,
-          }));
-        }, PLAY_DURATION);
-      } else {
-        if (this.playbackIntervalFn) {
-          clearInterval(this.playbackIntervalFn);
-        }
-        this.state.stopAllNotes();
-        this.setState({
-          activeNotesIndex: 0,
-        });
+  useEffect(() => {
+    if (isPlaying) {
+      playbackIntervalRef.current = setInterval(() => {
+        setActiveNotesIndex((prevIndex) => (prevIndex + 1) % song.length);
+      }, PLAY_DURATION);
+    } else {
+      if (playbackIntervalRef.current) {
+        clearInterval(playbackIntervalRef.current);
       }
+      stopAllNotes();
+      setActiveNotesIndex(0);
     }
-  }
+    return () => {
+      if (!playbackIntervalRef.current) return;
+      clearInterval(playbackIntervalRef.current);
+    };
+  }, [isPlaying, song.length, stopAllNotes]);
 
-  componentWillUnmount() {
-    if (this.playbackIntervalFn) {
-      clearInterval(this.playbackIntervalFn);
-    }
-    this.state.stopAllNotes();
-  }
+  useEffect(() => {
+    return () => {
+      if (playbackIntervalRef.current) {
+        clearInterval(playbackIntervalRef.current);
+      }
+      stopAllNotes();
+    };
+  }, []);
 
-  setPlaying = (value: boolean) => {
-    this.setState({ isPlaying: value });
+  const setPlaying = useCallback((value: boolean) => {
+    setIsPlaying(value);
+  }, []);
+
+  const noteRange = {
+    first: MidiNumbers.fromNote('c3'),
+    last: MidiNumbers.fromNote('f5'),
   };
 
-  render() {
-    const noteRange = {
-      first: MidiNumbers.fromNote('c3'),
-      last: MidiNumbers.fromNote('f5'),
-    };
-
-    return (
-      <div>
-        <div className="text-center">
-          <p>Or try playing it back.</p>
-          <div>
-            <button
-              className={classNames('btn', {
-                'btn-outline-info': !this.state.isPlaying,
-                'btn-outline-danger': this.state.isPlaying,
-              })}
-              onClick={() => this.setPlaying(!this.state.isPlaying)}
-            >
-              {this.state.isPlaying ? 'Stop' : 'Start'}
-            </button>
-          </div>
-        </div>
-        <div className="mt-4">
-          <SoundfontProvider
-            audioContext={this.props.audioContext}
-            instrumentName="ocarina"
-            hostname={this.props.soundfontHostname}
-            onLoad={({ stopAllNotes }) => this.setState({ stopAllNotes })}
-            playDuration={PLAY_DURATION}
-            render={({ isLoading, playNote, stopNote }) => (
-              <DimensionsProvider>
-                {({ containerWidth }) => (
-                  <Piano
-                    activeNotes={
-                      this.state.isPlaying ? this.props.song[this.state.activeNotesIndex] : []
-                    }
-                    noteRange={noteRange}
-                    width={containerWidth}
-                    playNote={playNote}
-                    stopNote={stopNote}
-                    disabled={isLoading || !this.state.isPlaying}
-                  />
-                )}
-              </DimensionsProvider>
-            )}
-          />
+  return (
+    <div>
+      <div className="text-center">
+        <p>Or try playing it back.</p>
+        <div>
+          <button
+            className={classNames('btn', {
+              'btn-outline-info': !isPlaying,
+              'btn-outline-danger': isPlaying,
+            })}
+            onClick={() => setPlaying(!isPlaying)}
+          >
+            {isPlaying ? 'Stop' : 'Start'}
+          </button>
         </div>
       </div>
-    );
-  }
-}
+      <div className="mt-4">
+        <SoundfontProvider
+          audioContext={audioContext}
+          instrumentName="ocarina"
+          hostname={soundfontHostname}
+          onLoad={({ stopAllNotes }) => setStopAllNotes(() => stopAllNotes)}
+          playDuration={PLAY_DURATION}
+          render={({ isLoading, playNote, stopNote }) => (
+            <DimensionsProvider>
+              {({ containerWidth }) => (
+                <Piano
+                  activeNotes={isPlaying ? song[activeNotesIndex] : []}
+                  noteRange={noteRange}
+                  width={containerWidth}
+                  playNote={playNote}
+                  stopNote={stopNote}
+                  disabled={isLoading || !isPlaying}
+                />
+              )}
+            </DimensionsProvider>
+          )}
+        />
+      </div>
+    </div>
+  );
+};
 
 export default PlaybackDemo;
