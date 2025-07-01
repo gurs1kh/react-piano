@@ -60,11 +60,19 @@ const InteractiveDemo = ({ audioContext, soundfontHostname }: InteractiveDemoPro
                 hostname={soundfontHostname}
                 render={(instrumentList) => (
                   <PianoConfig
-                    config={{ noteRange, instrumentName, keyboardShortcutOffset }}
-                    setConfig={({ noteRange, instrumentName, keyboardShortcutOffset }) => {
-                      if (instrumentName) setInstrumentName(instrumentName);
-                      if (noteRange) setNoteRange(noteRange);
-                      if (keyboardShortcutOffset) setKeyboardShortcutOffset(keyboardShortcutOffset);
+                    instrumentName={instrumentName}
+                    noteRange={noteRange}
+                    keyboardShortcutOffset={keyboardShortcutOffset}
+                    onChangeInstrumentName={(instrumentName) => {
+                      setInstrumentName(instrumentName);
+                      stopAllNotes();
+                    }}
+                    onChangeNoteRange={(noteRange) => {
+                      setNoteRange(noteRange);
+                      stopAllNotes();
+                    }}
+                    onChangeKeyboardShortcutOffset={(keyboardShortcutOffset) => {
+                      setKeyboardShortcutOffset(keyboardShortcutOffset);
                       stopAllNotes();
                     }}
                     instrumentList={instrumentList || [instrumentName]}
