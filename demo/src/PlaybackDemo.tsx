@@ -2,8 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Piano, MidiNumbers } from 'react-piano';
 import classNames from 'classnames';
 import useDimensions from 'react-use-dimensions';
-
-import { SoundfontProvider } from './SoundfontProvider';
+import { useSoundfont } from './hooks/useSoundfont';
 
 const PLAY_DURATION = 200;
 
@@ -16,10 +15,15 @@ interface PlaybackDemoProps {
 export const PlaybackDemo: React.FC<PlaybackDemoProps> = ({ audioContext, soundfontHostname, song }) => {
   const [activeNotesIndex, setActiveNotesIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [stopAllNotes, setStopAllNotes] = useState<() => void>(() => () => console.warn('stopAllNotes not yet loaded'));
   const playbackIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
   const [ref, { width: containerWidth }] = useDimensions();
+  const { isLoading, playNote, stopNote, stopAllNotes } = useSoundfont({
+    audioContext,
+    instrumentName: 'ocarina',
+    hostname: soundfontHostname,
+    playDuration: PLAY_DURATION,
+  });
 
   useEffect(() => {
     if (isPlaying) {
@@ -74,22 +78,13 @@ export const PlaybackDemo: React.FC<PlaybackDemoProps> = ({ audioContext, soundf
         </div>
       </div>
       <div className="mt-4" ref={ref}>
-        <SoundfontProvider
-          audioContext={audioContext}
-          instrumentName="ocarina"
-          hostname={soundfontHostname}
-          onLoad={({ stopAllNotes }) => setStopAllNotes(() => stopAllNotes)}
-          playDuration={PLAY_DURATION}
-          render={({ isLoading, playNote, stopNote }) => (
-            <Piano
-              activeNotes={isPlaying ? song[activeNotesIndex] : []}
-              noteRange={noteRange}
-              width={containerWidth}
-              playNote={playNote}
-              stopNote={stopNote}
-              disabled={isLoading || !isPlaying}
-            />
-          )}
+        <Piano
+          activeNotes={isPlaying ? song[activeNotesIndex] : []}
+          noteRange={noteRange}
+          width={containerWidth}
+          playNote={playNote}
+          stopNote={stopNote}
+          disabled={isLoading || !isPlaying}
         />
       </div>
     </div>
