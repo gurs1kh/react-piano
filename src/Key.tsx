@@ -1,7 +1,7 @@
 import React from 'react';
 import classNames from 'classnames';
 
-import MidiNumbers from './MidiNumbers';
+import { MidiNumbers } from './MidiNumbers';
 
 export interface KeyProps {
   midiNumber: number;
@@ -109,5 +109,3 @@ export class Key extends React.Component<KeyProps> {
     );
   }
 }
-
-export default Key;

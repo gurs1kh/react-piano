@@ -1,5 +1,5 @@
 import React from 'react';
-import ControlledPiano, { ControlledPianoProps } from './ControlledPiano';
+import { ControlledPiano, ControlledPianoProps } from './ControlledPiano';
 
 export interface PianoProps extends Omit<ControlledPianoProps, 'activeNotes' | 'onPlayNoteInput' | 'onStopNoteInput'> {
   activeNotes?: number[];
@@ -11,7 +11,7 @@ interface PianoState {
   activeNotes: number[];
 }
 
-class Piano extends React.Component<PianoProps, PianoState> {
+export class Piano extends React.Component<PianoProps, PianoState> {
   constructor(props: PianoProps) {
     super(props);
     this.state = {
@@ -68,5 +68,3 @@ class Piano extends React.Component<PianoProps, PianoState> {
     );
   }
 }
-
-export default Piano;

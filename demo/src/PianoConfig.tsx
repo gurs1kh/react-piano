@@ -1,7 +1,7 @@
 import React, { useEffect, useCallback } from 'react';
 import { MidiNumbers } from 'react-piano';
 import { InstrumentName } from 'soundfont-player';
-import AutoblurSelect from './AutoBlurSelect';
+import { AutoblurSelect } from './AutoBlurSelect';
 
 interface PianoConfigProps {
   instrumentName: InstrumentName;
@@ -14,7 +14,7 @@ interface PianoConfigProps {
   keyboardShortcuts: any[];
 }
 
-const PianoConfig: React.FC<PianoConfigProps> = (props: PianoConfigProps) => {
+export const PianoConfig: React.FC<PianoConfigProps> = (props: PianoConfigProps) => {
   const {
     instrumentName,
     noteRange,
@@ -134,5 +134,3 @@ const PianoConfig: React.FC<PianoConfigProps> = (props: PianoConfigProps) => {
     </div>
   );
 };
-
-export default PianoConfig;

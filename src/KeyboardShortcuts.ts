@@ -1,4 +1,4 @@
-import MidiNumbers from './MidiNumbers';
+import { MidiNumbers } from './MidiNumbers';
 
 interface CreateKeyboardShortcutsProps {
   firstNote: number;
@@ -40,7 +40,7 @@ function createKeyboardShortcuts({ firstNote, lastNote, keyboardConfig }: Create
   return keyboardShortcuts;
 }
 
-export default {
+export const KeyboardShortcuts = {
   create: createKeyboardShortcuts,
   // Preset configurations
   BOTTOM_ROW: [

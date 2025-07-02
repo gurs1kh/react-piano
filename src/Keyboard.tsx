@@ -2,8 +2,8 @@ import React from 'react';
 import range from 'just-range';
 import classNames from 'classnames';
 
-import Key from './Key';
-import MidiNumbers from './MidiNumbers';
+import { Key } from './Key';
+import { MidiNumbers } from './MidiNumbers';
 
 export interface KeyboardProps {
   noteRange: {
@@ -105,4 +105,3 @@ export class Keyboard extends React.Component<KeyboardProps> {
   }
 }
 
-export default Keyboard;

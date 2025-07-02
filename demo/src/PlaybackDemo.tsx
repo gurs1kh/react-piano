@@ -2,8 +2,8 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Piano, MidiNumbers } from 'react-piano';
 import classNames from 'classnames';
 
-import DimensionsProvider from './DimensionsProvider';
-import SoundfontProvider from './SoundfontProvider';
+import { DimensionsProvider } from './DimensionsProvider';
+import { SoundfontProvider } from './SoundfontProvider';
 
 const PLAY_DURATION = 200;
 
@@ -13,7 +13,7 @@ interface PlaybackDemoProps {
   song: number[][];
 }
 
-const PlaybackDemo: React.FC<PlaybackDemoProps> = ({ audioContext, soundfontHostname, song }) => {
+export const PlaybackDemo: React.FC<PlaybackDemoProps> = ({ audioContext, soundfontHostname, song }) => {
   const [activeNotesIndex, setActiveNotesIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const [stopAllNotes, setStopAllNotes] = useState<() => void>(() => () => console.warn('stopAllNotes not yet loaded'));
@@ -97,5 +97,3 @@ const PlaybackDemo: React.FC<PlaybackDemoProps> = ({ audioContext, soundfontHost
     </div>
   );
 };
-
-export default PlaybackDemo;

@@ -1,15 +1,15 @@
 import 'react-piano/dist/styles.css';
 import 'bootstrap/dist/css/bootstrap.min.css'
 
-import InteractiveDemo from './InteractiveDemo';
-import PlaybackDemo from './PlaybackDemo';
+import { InteractiveDemo } from './InteractiveDemo';
+import { PlaybackDemo } from './PlaybackDemo';
 import { lostWoods } from './songs';
 import './App.scss';
 
 const audioContext = new (window.AudioContext || window.webkitAudioContext)();
 const soundfontHostname = 'https://d1pzp51pvbm36p.cloudfront.net';
 
-const App = () => (
+export const App = () => (
   <div>
     <header style={{ background: '#333' }}>
       <div className="container">
@@ -82,4 +82,3 @@ const App = () => (
   </div>
 );
 
-export default App;

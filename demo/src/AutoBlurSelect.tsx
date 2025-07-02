@@ -5,7 +5,7 @@ interface AutoblurSelectProps extends React.SelectHTMLAttributes<HTMLSelectEleme
   children: React.ReactNode;
 }
 
-class AutoblurSelect extends React.Component<AutoblurSelectProps> {
+export class AutoblurSelect extends React.Component<AutoblurSelectProps> {
   selectRef = React.createRef<HTMLSelectElement>();
 
   onChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -24,5 +24,3 @@ class AutoblurSelect extends React.Component<AutoblurSelectProps> {
     );
   }
 }
-
-export default AutoblurSelect;

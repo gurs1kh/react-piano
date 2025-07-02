@@ -6,7 +6,7 @@ export interface InstrumentListProviderProps {
   render: (instrumentList: any) => React.ReactNode;
 }
 
-class InstrumentListProvider extends React.Component<InstrumentListProviderProps> {
+export class InstrumentListProvider extends React.Component<InstrumentListProviderProps> {
   static defaultProps = {
     soundfont: 'MusyngKite',
   };
@@ -33,5 +33,3 @@ class InstrumentListProvider extends React.Component<InstrumentListProviderProps
     return this.props.render(this.state.instrumentList);
   }
 }
-
-export default InstrumentListProvider;

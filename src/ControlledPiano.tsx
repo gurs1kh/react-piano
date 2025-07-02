@@ -1,7 +1,7 @@
 import React from 'react';
 import classNames from 'classnames';
 import difference from 'lodash.difference';
-import Keyboard from './Keyboard';
+import { Keyboard } from './Keyboard';
 
 export interface ControlledPianoProps {
   noteRange: {
@@ -29,7 +29,7 @@ export interface ControlledPianoProps {
   }>;
 }
 
-class ControlledPiano extends React.Component<ControlledPianoProps> {
+export class ControlledPiano extends React.Component<ControlledPianoProps> {
   static defaultProps: Partial<ControlledPianoProps> = {
     renderNoteLabel: ({ keyboardShortcut, isActive, isAccidental }) =>
       keyboardShortcut ? (
@@ -194,5 +194,3 @@ class ControlledPiano extends React.Component<ControlledPianoProps> {
     );
   }
 }
-
-export default ControlledPiano;

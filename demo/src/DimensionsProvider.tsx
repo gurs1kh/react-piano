@@ -5,7 +5,7 @@ interface DimensionsProviderProps {
   children: (dimensions: { containerWidth: number | undefined; containerHeight: number | undefined }) => ReactNode;
 }
 
-const DimensionsProvider = (props: DimensionsProviderProps) => {
+export const DimensionsProvider = (props: DimensionsProviderProps) => {
   const [ref, { width, height }] = useDimensions();
   return (
     <div ref={ref}>
@@ -16,5 +16,3 @@ const DimensionsProvider = (props: DimensionsProviderProps) => {
     </div>
   );
 };
-
-export default DimensionsProvider;

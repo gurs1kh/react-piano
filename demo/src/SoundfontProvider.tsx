@@ -28,7 +28,7 @@ interface SoundfontProviderState {
   instrument?: Player;
 }
 
-class SoundfontProvider extends React.Component<SoundfontProviderProps> {
+export class SoundfontProvider extends React.Component<SoundfontProviderProps> {
   static defaultProps = {
     format: 'mp3' as const,
     soundfont: 'MusyngKite' as const,
@@ -143,5 +143,3 @@ class SoundfontProvider extends React.Component<SoundfontProviderProps> {
       : null;
   }
 }
-
-export default SoundfontProvider;

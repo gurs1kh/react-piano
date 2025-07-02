@@ -91,7 +91,7 @@ const NATURAL_MIDI_NUMBERS = range(MIN_MIDI_NUMBER, MAX_MIDI_NUMBER + 1).filter(
   (midiNumber) => !getAttributes(midiNumber).isAccidental,
 );
 
-export default {
+export const MidiNumbers = {
   fromNote,
   getAttributes,
   MIN_MIDI_NUMBER,

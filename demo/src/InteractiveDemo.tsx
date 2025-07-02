@@ -2,10 +2,10 @@ import { useState } from 'react';
 import { Piano, KeyboardShortcuts, MidiNumbers } from 'react-piano';
 import { MdArrowDownward } from 'react-icons/md';
 
-import DimensionsProvider from './DimensionsProvider';
-import InstrumentListProvider from './InstrumentListProvider';
-import SoundfontProvider from './SoundfontProvider';
-import PianoConfig from './PianoConfig';
+import { DimensionsProvider } from './DimensionsProvider';
+import { InstrumentListProvider } from './InstrumentListProvider';
+import { SoundfontProvider } from './SoundfontProvider';
+import { PianoConfig } from './PianoConfig';
 import { InstrumentName } from 'soundfont-player';
 
 interface InteractiveDemoProps {
@@ -13,7 +13,7 @@ interface InteractiveDemoProps {
   soundfontHostname: string;
 }
 
-const InteractiveDemo = ({ audioContext, soundfontHostname }: InteractiveDemoProps) => {
+export const InteractiveDemo = ({ audioContext, soundfontHostname }: InteractiveDemoProps) => {
   const [instrumentName, setInstrumentName] = useState<InstrumentName>('acoustic_grand_piano');
   const [noteRange, setNoteRange] = useState({
     first: MidiNumbers.fromNote('c3'),
@@ -87,5 +87,3 @@ const InteractiveDemo = ({ audioContext, soundfontHostname }: InteractiveDemoPro
     />
   );
 }
-
-export default InteractiveDemo;
