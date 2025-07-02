@@ -3,7 +3,7 @@ import { Piano, KeyboardShortcuts, MidiNumbers } from 'react-piano';
 import { MdArrowDownward } from 'react-icons/md';
 import useDimensions from 'react-use-dimensions';
 import { useSoundfont } from './hooks/useSoundfont';
-import { InstrumentListProvider } from './InstrumentListProvider';
+import { useInstrumentList } from './hooks/useInstrumentList';
 import { PianoConfig } from './PianoConfig';
 import { InstrumentName } from 'soundfont-player';
 
@@ -13,6 +13,7 @@ interface InteractiveDemoProps {
 }
 
 export const InteractiveDemo = ({ audioContext, soundfontHostname }: InteractiveDemoProps) => {
+  const { instrumentList } = useInstrumentList(soundfontHostname, 'MusyngKite');
   const [instrumentName, setInstrumentName] = useState<InstrumentName>('acoustic_grand_piano');
   const [noteRange, setNoteRange] = useState({
     first: MidiNumbers.fromNote('c3'),
@@ -53,29 +54,24 @@ export const InteractiveDemo = ({ audioContext, soundfontHostname }: Interactive
       </div>
       <div className="row mt-5">
         <div className="col-lg-8 offset-lg-2">
-          <InstrumentListProvider
-            hostname={soundfontHostname}
-            render={(instrumentList) => (
-              <PianoConfig
-                instrumentName={instrumentName}
-                noteRange={noteRange}
-                keyboardShortcutOffset={keyboardShortcutOffset}
-                onChangeInstrumentName={(instrumentName) => {
-                  setInstrumentName(instrumentName);
-                  stopAllNotes();
-                }}
-                onChangeNoteRange={(noteRange) => {
-                  setNoteRange(noteRange);
-                  stopAllNotes();
-                }}
-                onChangeKeyboardShortcutOffset={(keyboardShortcutOffset) => {
-                  setKeyboardShortcutOffset(keyboardShortcutOffset);
-                  stopAllNotes();
-                }}
-                instrumentList={instrumentList || [instrumentName]}
-                keyboardShortcuts={keyboardShortcuts}
-              />
-            )}
+          <PianoConfig
+            instrumentName={instrumentName}
+            noteRange={noteRange}
+            keyboardShortcutOffset={keyboardShortcutOffset}
+            onChangeInstrumentName={(instrumentName) => {
+              setInstrumentName(instrumentName);
+              stopAllNotes();
+            }}
+            onChangeNoteRange={(noteRange) => {
+              setNoteRange(noteRange);
+              stopAllNotes();
+            }}
+            onChangeKeyboardShortcutOffset={(keyboardShortcutOffset) => {
+              setKeyboardShortcutOffset(keyboardShortcutOffset);
+              stopAllNotes();
+            }}
+            instrumentList={instrumentList || [instrumentName]}
+            keyboardShortcuts={keyboardShortcuts}
           />
         </div>
       </div>
