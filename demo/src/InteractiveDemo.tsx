@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { Piano, KeyboardShortcuts, MidiNumbers } from 'react-piano';
 import { MdArrowDownward } from 'react-icons/md';
+import useDimensions from 'react-use-dimensions';
 
-import { DimensionsProvider } from './DimensionsProvider';
 import { InstrumentListProvider } from './InstrumentListProvider';
 import { SoundfontProvider } from './SoundfontProvider';
 import { PianoConfig } from './PianoConfig';
@@ -20,6 +20,8 @@ export const InteractiveDemo = ({ audioContext, soundfontHostname }: Interactive
     last: MidiNumbers.fromNote('f5'),
   });
   const [keyboardShortcutOffset, setKeyboardShortcutOffset] = useState(0);
+
+  const [dimensionsRef, { width: containerWidth }] = useDimensions();
 
   const keyboardShortcuts = KeyboardShortcuts.create({
     firstNote: noteRange.first + keyboardShortcutOffset,
@@ -40,19 +42,15 @@ export const InteractiveDemo = ({ audioContext, soundfontHostname }: Interactive
               <MdArrowDownward size={32} />
             </div>
           </div>
-          <div className="mt-4">
-            <DimensionsProvider>
-              {({ containerWidth }) => (
-                <Piano
-                  noteRange={noteRange}
-                  keyboardShortcuts={keyboardShortcuts}
-                  playNote={playNote}
-                  stopNote={stopNote}
-                  disabled={isLoading}
-                  width={containerWidth}
-                />
-              )}
-            </DimensionsProvider>
+          <div className="mt-4" ref={dimensionsRef}>
+            <Piano
+              noteRange={noteRange}
+              keyboardShortcuts={keyboardShortcuts}
+              playNote={playNote}
+              stopNote={stopNote}
+              disabled={isLoading}
+              width={containerWidth}
+            />
           </div>
           <div className="row mt-5">
             <div className="col-lg-8 offset-lg-2">
