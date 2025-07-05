@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import Soundfont, { InstrumentName, Player } from 'soundfont-player';
 import { defaults } from '../config/defaults';
+export { InstrumentName } from 'soundfont-player';
 
 interface UseSoundfontOptions {
   instrumentName: InstrumentName;

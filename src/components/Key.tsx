@@ -1,7 +1,7 @@
 import React from 'react';
 import classNames from 'classnames';
 
-import { MidiNumbers } from './MidiNumbers';
+import { MidiNumbers } from '../utils/MidiNumbers';
 
 export interface KeyProps {
   midiNumber: number;
