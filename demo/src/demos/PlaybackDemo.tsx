@@ -1,27 +1,22 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { Piano, MidiNumbers, useSoundfont } from 'react-piano';
 import classNames from 'classnames';
 import useDimensions from 'react-use-dimensions';
+import { lostWoods as song } from '../data/songs'; // Adjust the import path as necessary
 
-const PLAY_DURATION = 200;
-
-interface PlaybackDemoProps {
-  song: number[][];
-}
-
-export const PlaybackDemo: React.FC<PlaybackDemoProps> = ({ song }) => {
+export const PlaybackDemo =() => {
   const [activeNotesIndex, setActiveNotesIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const playbackIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
   const [dimensionsRef, { width: containerWidth }] = useDimensions();
-  const { isLoading, playNote, stopNote, stopAllNotes } = useSoundfont({ instrumentName: 'ocarina' });
+  const { isLoading, playNote, stopNote, stopAllNotes } = useSoundfont({ instrumentName: song.instrumentName });
 
   useEffect(() => {
     if (isPlaying) {
       playbackIntervalRef.current = setInterval(() => {
-        setActiveNotesIndex((prevIndex) => (prevIndex + 1) % song.length);
-      }, PLAY_DURATION);
+        setActiveNotesIndex((prevIndex) => (prevIndex + 1) % song.notes.length);
+      }, song.playDuration);
     } else {
       if (playbackIntervalRef.current) {
         clearInterval(playbackIntervalRef.current);
@@ -33,7 +28,7 @@ export const PlaybackDemo: React.FC<PlaybackDemoProps> = ({ song }) => {
       if (!playbackIntervalRef.current) return;
       clearInterval(playbackIntervalRef.current);
     };
-  }, [isPlaying, song.length, stopAllNotes]);
+  }, [isPlaying, song.notes.length, stopAllNotes]);
 
   useEffect(() => {
     return () => {
@@ -71,7 +66,7 @@ export const PlaybackDemo: React.FC<PlaybackDemoProps> = ({ song }) => {
       </div>
       <div className="mt-4" ref={dimensionsRef}>
         <Piano
-          activeNotes={isPlaying ? song[activeNotesIndex] : []}
+          activeNotes={isPlaying ? song.notes[activeNotesIndex] : []}
           noteRange={noteRange}
           width={containerWidth}
           playNote={playNote}
