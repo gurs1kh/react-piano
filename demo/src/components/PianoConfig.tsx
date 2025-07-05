@@ -1,62 +1,22 @@
-import React, { useEffect, useCallback } from 'react';
 import { MidiNumbers, InstrumentName } from 'react-piano';
 import { AutoblurSelect } from './AutoBlurSelect';
 
 interface PianoConfigProps {
   instrumentName: InstrumentName;
   noteRange: { first: number; last: number; };
-  keyboardShortcutOffset: number;
   onChangeInstrumentName: (name: InstrumentName) => void;
   onChangeNoteRange: (range: { first: number; last: number }) => void;
-  onChangeKeyboardShortcutOffset: (offset: number) => void;
   instrumentList: string[];
-  keyboardShortcuts: any[];
 }
 
-export const PianoConfig: React.FC<PianoConfigProps> = (props: PianoConfigProps) => {
+export const PianoConfig = (props: PianoConfigProps) => {
   const {
     instrumentName,
     noteRange,
-    keyboardShortcutOffset,
     onChangeInstrumentName,
     onChangeNoteRange,
-    onChangeKeyboardShortcutOffset,
     instrumentList,
-    keyboardShortcuts,
-  } = props
-
-  const handleKeyDown = useCallback(
-    (event: KeyboardEvent) => {
-      const delta = {
-        ArrowLeft: -1,
-        ArrowRight: 1,
-      }[event.key] || 0;
-
-      if (delta === 0) return;
-
-      const numNotes = noteRange.last - noteRange.first + 1;
-      const minOffset = 0;
-      const maxOffset = numNotes - keyboardShortcuts.length;
-
-      const newOffset = Math.max(
-        minOffset,
-        Math.min(
-          maxOffset,
-          keyboardShortcutOffset + delta
-        )
-      );
-
-      onChangeKeyboardShortcutOffset(newOffset);
-    },
-    [noteRange, keyboardShortcutOffset, keyboardShortcuts]
-  );
-
-  useEffect(() => {
-    window.addEventListener('keydown', handleKeyDown);
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-    };
-  }, [handleKeyDown]);
+  } = props;
 
   const onChangeFirstNote = (event: React.ChangeEvent<HTMLSelectElement>) => {
     onChangeNoteRange({

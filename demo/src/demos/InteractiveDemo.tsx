@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { SoundfontPiano, KeyboardShortcuts, MidiNumbers, useInstrumentList, InstrumentName } from 'react-piano';
+import { SoundfontPiano, useKeyboardShortcuts, MidiNumbers, useInstrumentList, InstrumentName } from 'react-piano';
 import { MdArrowDownward } from 'react-icons/md';
 import useDimensions from 'react-use-dimensions';
 import { PianoConfig } from '../components/PianoConfig';
@@ -11,15 +11,8 @@ export const InteractiveDemo = () => {
     first: MidiNumbers.fromNote('c3'),
     last: MidiNumbers.fromNote('f5'),
   });
-  const [keyboardShortcutOffset, setKeyboardShortcutOffset] = useState(0);
-
+  const { keyboardShortcuts } = useKeyboardShortcuts(noteRange);
   const [dimensionsRef, { width: containerWidth }] = useDimensions();
-
-  const keyboardShortcuts = KeyboardShortcuts.create({
-    firstNote: noteRange.first + keyboardShortcutOffset,
-    lastNote: noteRange.last + keyboardShortcutOffset,
-    keyboardConfig: KeyboardShortcuts.HOME_ROW,
-  });
 
   return (
     <div>
@@ -42,7 +35,6 @@ export const InteractiveDemo = () => {
           <PianoConfig
             instrumentName={instrumentName}
             noteRange={noteRange}
-            keyboardShortcutOffset={keyboardShortcutOffset}
             onChangeInstrumentName={(instrumentName) => {
               setInstrumentName(instrumentName);
               // stopAllNotes();
@@ -51,12 +43,7 @@ export const InteractiveDemo = () => {
               setNoteRange(noteRange);
               // stopAllNotes();
             }}
-            onChangeKeyboardShortcutOffset={(keyboardShortcutOffset) => {
-              setKeyboardShortcutOffset(keyboardShortcutOffset);
-              // stopAllNotes();
-            }}
             instrumentList={instrumentList || [instrumentName]}
-            keyboardShortcuts={keyboardShortcuts}
           />
         </div>
       </div>
