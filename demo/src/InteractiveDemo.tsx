@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Piano, KeyboardShortcuts, MidiNumbers, useInstrumentList, useSoundfont, InstrumentName } from 'react-piano';
+import { SoundfontPiano, KeyboardShortcuts, MidiNumbers, useInstrumentList, InstrumentName } from 'react-piano';
 import { MdArrowDownward } from 'react-icons/md';
 import useDimensions from 'react-use-dimensions';
 import { PianoConfig } from './PianoConfig';
@@ -17,7 +17,6 @@ export const InteractiveDemo = (_props: InteractiveDemoProps) => {
   const [keyboardShortcutOffset, setKeyboardShortcutOffset] = useState(0);
 
   const [dimensionsRef, { width: containerWidth }] = useDimensions();
-  const { playNote, stopNote, stopAllNotes, isLoading } = useSoundfont({ instrumentName });
 
   const keyboardShortcuts = KeyboardShortcuts.create({
     firstNote: noteRange.first + keyboardShortcutOffset,
@@ -34,12 +33,10 @@ export const InteractiveDemo = (_props: InteractiveDemoProps) => {
         </div>
       </div>
       <div className="mt-4" ref={dimensionsRef}>
-        <Piano
+        <SoundfontPiano
+          instrumentName={instrumentName}
           noteRange={noteRange}
           keyboardShortcuts={keyboardShortcuts}
-          playNote={playNote}
-          stopNote={stopNote}
-          disabled={isLoading}
           width={containerWidth}
         />
       </div>
@@ -51,15 +48,15 @@ export const InteractiveDemo = (_props: InteractiveDemoProps) => {
             keyboardShortcutOffset={keyboardShortcutOffset}
             onChangeInstrumentName={(instrumentName) => {
               setInstrumentName(instrumentName);
-              stopAllNotes();
+              // stopAllNotes();
             }}
             onChangeNoteRange={(noteRange) => {
               setNoteRange(noteRange);
-              stopAllNotes();
+              // stopAllNotes();
             }}
             onChangeKeyboardShortcutOffset={(keyboardShortcutOffset) => {
               setKeyboardShortcutOffset(keyboardShortcutOffset);
-              stopAllNotes();
+              // stopAllNotes();
             }}
             instrumentList={instrumentList || [instrumentName]}
             keyboardShortcuts={keyboardShortcuts}

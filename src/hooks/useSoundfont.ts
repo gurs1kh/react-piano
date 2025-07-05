@@ -4,7 +4,7 @@ import { defaults } from '../config/defaults';
 export { InstrumentName } from 'soundfont-player';
 
 interface UseSoundfontOptions {
-  instrumentName: InstrumentName;
+  instrumentName?: InstrumentName;
   hostname?: string;
   format?: 'mp3' | 'ogg';
   soundfont?: 'MusyngKite' | 'FluidR3_GM';
