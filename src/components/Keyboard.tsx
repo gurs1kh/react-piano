@@ -3,7 +3,7 @@ import range from 'just-range';
 import classNames from 'classnames';
 
 import { Key } from './Key';
-import { MidiNumbers } from './MidiNumbers';
+import { MidiNumbers } from '../utils/MidiNumbers';
 
 export interface KeyboardProps {
   noteRange: {

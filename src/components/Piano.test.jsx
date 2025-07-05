@@ -2,7 +2,7 @@ import React from 'react';
 import { mount } from 'enzyme';
 
 import Piano from './Piano';
-import MidiNumbers from './MidiNumbers';
+import MidiNumbers from '../utils/MidiNumbers';
 
 let eventListenerCallbacks;
 let spyConsoleError;
