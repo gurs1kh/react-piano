@@ -1,4 +1,4 @@
-import React from 'react';
+import { useCallback, ReactNode } from 'react';
 import range from 'just-range';
 import classNames from 'classnames';
 
@@ -17,7 +17,7 @@ export interface KeyboardProps {
     isActive: boolean;
     isAccidental: boolean;
     midiNumber: number;
-  }) => React.ReactNode;
+  }) => ReactNode;
   keyWidthToHeight?: number;
   className?: string;
   disabled?: boolean;
@@ -26,82 +26,85 @@ export interface KeyboardProps {
   width?: number;
 }
 
-export class Keyboard extends React.Component<KeyboardProps> {
-  static defaultProps = {
-    disabled: false,
-    gliss: false,
-    useTouchEvents: false,
-    keyWidthToHeight: 0.33,
-    renderNoteLabel: () => null,
-    activeNotes: [],
-  };
+export const Keyboard = (props: KeyboardProps) => {
+  const {
+    noteRange,
+    activeNotes,
+    onPlayNoteInput,
+    onStopNoteInput,
+    renderNoteLabel,
+    keyWidthToHeight = 0.33,
+    className = '',
+    disabled = false,
+    gliss = false,
+    useTouchEvents = false,
+    width,
+  } = props;
 
   // Range of midi numbers on keyboard
-  getMidiNumbers() {
-    return range(this.props.noteRange.first, this.props.noteRange.last + 1);
-  }
+  const getMidiNumbers = useCallback(() => {
+    return range(noteRange.first, noteRange.last + 1);
+  }, [noteRange.first, noteRange.last]);
 
-  getNaturalKeyCount() {
-    return this.getMidiNumbers().filter((number: number) => {
+  const getNaturalKeyCount = useCallback(() => {
+    return getMidiNumbers().filter((number: number) => {
       const { isAccidental } = MidiNumbers.getAttributes(number);
       return !isAccidental;
     }).length;
-  }
+  }, [getMidiNumbers]);
 
   // Returns a ratio between 0 and 1
-  getNaturalKeyWidth() {
-    return 1 / this.getNaturalKeyCount();
-  }
+  const getNaturalKeyWidth = useCallback(() => {
+    return 1 / getNaturalKeyCount();
+  }, [getNaturalKeyCount]);
 
-  getWidth() {
-    return this.props.width ? this.props.width : '100%';
-  }
+  const getWidth = useCallback(() => {
+    return width ? width : '100%';
+  }, [width]);
 
-  getHeight() {
-    if (!this.props.width) {
+  const getHeight = useCallback(() => {
+    if (!width) {
       return '100%';
     }
-    const keyWidth = this.props.width * this.getNaturalKeyWidth();
-    return `${keyWidth / (this.props.keyWidthToHeight || 0.33)}px`;
-  }
+    const keyWidth = width * getNaturalKeyWidth();
+    return `${keyWidth / (keyWidthToHeight || 0.33)}px`;
+  }, [width, getNaturalKeyWidth, keyWidthToHeight]);
 
-  render() {
-    const naturalKeyWidth = this.getNaturalKeyWidth();
-    return (
-      <div
-        className={classNames('ReactPiano__Keyboard', this.props.className)}
-        style={{ width: this.getWidth(), height: this.getHeight() }}
-      >
-        {this.getMidiNumbers().map((midiNumber: number) => {
-          const { isAccidental } = MidiNumbers.getAttributes(midiNumber);
-          const isActive =
-            !this.props.disabled && this.props.activeNotes.includes(midiNumber);
-          return (
-            <Key
-              naturalKeyWidth={naturalKeyWidth}
-              midiNumber={midiNumber}
-              noteRange={this.props.noteRange}
-              active={isActive}
-              accidental={isAccidental}
-              disabled={this.props.disabled}
-              onPlayNoteInput={this.props.onPlayNoteInput}
-              onStopNoteInput={this.props.onStopNoteInput}
-              gliss={this.props.gliss}
-              useTouchEvents={this.props.useTouchEvents}
-              key={midiNumber}
-            >
-              {this.props.disabled
-                ? null
-                : this.props.renderNoteLabel({
-                    isActive,
-                    isAccidental,
-                    midiNumber,
-                  })}
-            </Key>
-          );
-        })}
-      </div>
-    );
-  }
-}
+  const midiNumbers = getMidiNumbers();
+  const naturalKeyWidth = getNaturalKeyWidth();
 
+  return (
+    <div
+      className={classNames('ReactPiano__Keyboard', className)}
+      style={{ width: getWidth(), height: getHeight() }}
+    >
+      {midiNumbers.map((midiNumber: number) => {
+        const { isAccidental } = MidiNumbers.getAttributes(midiNumber);
+        const isActive = !disabled && activeNotes.includes(midiNumber);
+        return (
+          <Key
+            naturalKeyWidth={naturalKeyWidth}
+            midiNumber={midiNumber}
+            noteRange={noteRange}
+            active={isActive}
+            accidental={isAccidental}
+            disabled={disabled}
+            onPlayNoteInput={onPlayNoteInput}
+            onStopNoteInput={onStopNoteInput}
+            gliss={gliss}
+            useTouchEvents={useTouchEvents}
+            key={midiNumber}
+          >
+            {disabled
+              ? null
+              : renderNoteLabel({
+                  isActive,
+                  isAccidental,
+                  midiNumber,
+                })}
+          </Key>
+        );
+      })}
+    </div>
+  );
+};
