@@ -1,19 +1,14 @@
 import { useState } from 'react';
-import { Piano, KeyboardShortcuts, MidiNumbers } from 'react-piano';
+import { Piano, KeyboardShortcuts, MidiNumbers, useInstrumentList, useSoundfont, InstrumentName } from 'react-piano';
 import { MdArrowDownward } from 'react-icons/md';
 import useDimensions from 'react-use-dimensions';
-import { useSoundfont } from './hooks/useSoundfont';
-import { useInstrumentList } from './hooks/useInstrumentList';
 import { PianoConfig } from './PianoConfig';
-import { InstrumentName } from 'soundfont-player';
 
 interface InteractiveDemoProps {
-  audioContext: AudioContext;
-  soundfontHostname: string;
 }
 
-export const InteractiveDemo = ({ audioContext, soundfontHostname }: InteractiveDemoProps) => {
-  const { instrumentList } = useInstrumentList(soundfontHostname, 'MusyngKite');
+export const InteractiveDemo = (_props: InteractiveDemoProps) => {
+  const { instrumentList } = useInstrumentList();
   const [instrumentName, setInstrumentName] = useState<InstrumentName>('acoustic_grand_piano');
   const [noteRange, setNoteRange] = useState({
     first: MidiNumbers.fromNote('c3'),
@@ -22,11 +17,7 @@ export const InteractiveDemo = ({ audioContext, soundfontHostname }: Interactive
   const [keyboardShortcutOffset, setKeyboardShortcutOffset] = useState(0);
 
   const [dimensionsRef, { width: containerWidth }] = useDimensions();
-  const { playNote, stopNote, stopAllNotes, isLoading } = useSoundfont({
-    audioContext,
-    instrumentName,
-    hostname: soundfontHostname,
-  });
+  const { playNote, stopNote, stopAllNotes, isLoading } = useSoundfont({ instrumentName });
 
   const keyboardShortcuts = KeyboardShortcuts.create({
     firstNote: noteRange.first + keyboardShortcutOffset,

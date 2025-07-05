@@ -1,22 +1,23 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import Soundfont, { InstrumentName, Player } from 'soundfont-player';
+import { defaults } from '../config/defaults';
 
 interface UseSoundfontOptions {
   instrumentName: InstrumentName;
-  hostname: string;
+  hostname?: string;
   format?: 'mp3' | 'ogg';
   soundfont?: 'MusyngKite' | 'FluidR3_GM';
-  audioContext: AudioContext;
+  audioContext?: AudioContext;
   playDuration?: number;
 }
 
 export function useSoundfont(props: UseSoundfontOptions) {
   const {
-    instrumentName = 'acoustic_grand_piano',
-    hostname,
-    format = 'mp3',
-    soundfont = 'MusyngKite',
-    audioContext,
+    instrumentName = defaults.instrumentName,
+    hostname = defaults.soundfontHostname,
+    format = defaults.format,
+    soundfont = defaults.soundfont,
+    audioContext = defaults.audioContext,
     playDuration,
   } = props;
   

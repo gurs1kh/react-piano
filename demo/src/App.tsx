@@ -6,9 +6,6 @@ import { PlaybackDemo } from './PlaybackDemo';
 import { lostWoods } from './songs';
 import './App.scss';
 
-const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-const soundfontHostname = 'https://d1pzp51pvbm36p.cloudfront.net';
-
 export const App = () => (
   <div>
     <header style={{ background: '#333' }}>
@@ -34,17 +31,13 @@ export const App = () => (
     <div className="container">
       <div className="row mt-5">
         <div className="col-md-8 offset-md-2">
-          <InteractiveDemo audioContext={audioContext} soundfontHostname={soundfontHostname} />
+          <InteractiveDemo />
         </div>
       </div>
       <hr className="mt-5" />
       <div className="row mt-5">
         <div className="col-md-8 offset-md-2">
-          <PlaybackDemo
-            audioContext={audioContext}
-            soundfontHostname={soundfontHostname}
-            song={lostWoods}
-          />
+          <PlaybackDemo song={lostWoods} />
         </div>
       </div>
       <hr className="mt-5" />
