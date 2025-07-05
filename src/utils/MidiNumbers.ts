@@ -27,6 +27,11 @@ const MAX_MIDI_NUMBER = 127;
 const NOTE_REGEX = /([a-g])([#b]?)(\d+)/;
 const NOTES_IN_OCTAVE = 12;
 
+type Notes = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'A', 'B', 'C', 'D', 'E', 'F', 'G'];
+type Accidentals = ['#', 'b', ''];
+type Octaves = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
+export type Note = `${Notes[number]}${Accidentals[number]}${Octaves[number]}`;
+
 // Converts string notes in scientific pitch notation to a MIDI number, or null.
 //
 // Example: "c#0" => 13, "eb5" => 75, "abc" => null
@@ -34,7 +39,7 @@ const NOTES_IN_OCTAVE = 12;
 // References:
 // - http://www.flutopedia.com/octave_notation.htm
 // - https://github.com/danigb/tonal/blob/master/packages/note/index.js
-function fromNote(note: string) {
+function fromNote(note: Note) {
   if (!note) {
     throw Error('Invalid note argument');
   }
