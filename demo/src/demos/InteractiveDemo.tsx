@@ -4,10 +4,7 @@ import { MdArrowDownward } from 'react-icons/md';
 import useDimensions from 'react-use-dimensions';
 import { PianoConfig } from '../components/PianoConfig';
 
-interface InteractiveDemoProps {
-}
-
-export const InteractiveDemo = (_props: InteractiveDemoProps) => {
+export const InteractiveDemo = () => {
   const { instrumentList } = useInstrumentList();
   const [instrumentName, setInstrumentName] = useState<InstrumentName>('acoustic_grand_piano');
   const [noteRange, setNoteRange] = useState({

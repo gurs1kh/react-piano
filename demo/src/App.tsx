@@ -3,7 +3,6 @@ import 'bootstrap/dist/css/bootstrap.min.css'
 
 import { InteractiveDemo } from './demos/InteractiveDemo';
 import { PlaybackDemo } from './demos/PlaybackDemo';
-import { lostWoods } from './data/songs';
 import './App.scss';
 
 export const App = () => (
@@ -37,7 +36,7 @@ export const App = () => (
       <hr className="mt-5" />
       <div className="row mt-5">
         <div className="col-md-8 offset-md-2">
-          <PlaybackDemo song={lostWoods} />
+          <PlaybackDemo />
         </div>
       </div>
       <hr className="mt-5" />
