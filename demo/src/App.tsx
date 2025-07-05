@@ -1,9 +1,9 @@
 import 'react-piano/dist/styles.css';
 import 'bootstrap/dist/css/bootstrap.min.css'
 
-import { InteractiveDemo } from './InteractiveDemo';
-import { PlaybackDemo } from './PlaybackDemo';
-import { lostWoods } from './songs';
+import { InteractiveDemo } from './demos/InteractiveDemo';
+import { PlaybackDemo } from './demos/PlaybackDemo';
+import { lostWoods } from './data/songs';
 import './App.scss';
 
 export const App = () => (
