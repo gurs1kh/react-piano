@@ -8,7 +8,6 @@ interface UseSoundfontOptions {
   format?: 'mp3' | 'ogg';
   soundfont?: 'MusyngKite' | 'FluidR3_GM';
   audioContext?: AudioContext;
-  playDuration?: number;
 }
 
 export function useSoundfont(props: UseSoundfontOptions) {
@@ -18,7 +17,6 @@ export function useSoundfont(props: UseSoundfontOptions) {
     format = defaults.format,
     soundfont = defaults.soundfont,
     audioContext = defaults.audioContext,
-    playDuration,
   } = props;
   
   const [instrument, setInstrument] = useState<Player | undefined>();
@@ -53,17 +51,14 @@ export function useSoundfont(props: UseSoundfontOptions) {
     (midiNumber: number) => {
       resumeAudio().then(() => {
         if (!instrumentRef.current) return;
-        const playParams: Parameters<Player['start']> = !playDuration
-          ? [String(midiNumber)]
-          : [String(midiNumber), audioContext.currentTime, { duration: playDuration / 1000 }];
-        const audioNode = instrumentRef.current.play(...playParams);
+        const audioNode = instrumentRef.current.play(String(midiNumber));
         setActiveAudioNodes((prev) => ({
           ...prev,
           [midiNumber]: audioNode,
         }));
       });
     },
-    [audioContext, playDuration, resumeAudio]
+    [resumeAudio]
   );
 
   const stopNote = useCallback(

@@ -15,10 +15,7 @@ export const PlaybackDemo: React.FC<PlaybackDemoProps> = ({ song }) => {
   const playbackIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
   const [dimensionsRef, { width: containerWidth }] = useDimensions();
-  const { isLoading, playNote, stopNote, stopAllNotes } = useSoundfont({
-    instrumentName: 'ocarina',
-    playDuration: PLAY_DURATION,
-  });
+  const { isLoading, playNote, stopNote, stopAllNotes } = useSoundfont({ instrumentName: 'ocarina' });
 
   useEffect(() => {
     if (isPlaying) {
