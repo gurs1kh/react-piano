@@ -1,8 +1,8 @@
-import { useCallback, useEffect, useMemo } from 'react';
+import { useCallback, useEffect } from 'react';
 import { InstrumentName } from 'soundfont-player';
 import { Piano, PianoProps } from './Piano';
 import { useSoundfont } from '../hooks';
-import { MidiNumbers, Note } from '../utils';
+import { NoteRange, useNoteRange } from '../hooks/useNoteRange';
 
 interface SoundfontPianoProps extends Omit<PianoProps, 'onPlayNoteInput' | 'onStopNoteInput' | 'playNote' | 'stopNote' | 'noteRange'> {
   width: number;
@@ -11,13 +11,7 @@ interface SoundfontPianoProps extends Omit<PianoProps, 'onPlayNoteInput' | 'onSt
   soundfontHostname?: string;
   onPlayNote?: (midiNumber: number) => void;
   onStopNote?: (midiNumber: number) => void;
-  noteRange: {
-    first: number;
-    last: number;
-  } | {
-    first: Note;
-    last: Note;
-  };
+  noteRange: NoteRange;
 }
 
 export const SoundfontPiano = (props: SoundfontPianoProps) => {
@@ -33,15 +27,7 @@ export const SoundfontPiano = (props: SoundfontPianoProps) => {
     onStopNote = () => 0,
   } = props;
 
-  const noteRange = useMemo(() => {
-    return (typeof noteRangeProp.first === 'number')
-      ? noteRangeProp
-      : {
-        first: MidiNumbers.fromNote(noteRangeProp.first),
-        last: MidiNumbers.fromNote(noteRangeProp.last),
-      };
-  }, [noteRangeProp]);
-
+  const { noteRange } = useNoteRange(noteRangeProp);
   const { playNote, stopNote, isLoading, stopAllNotes } = useSoundfont({
     audioContext,
     instrumentName,
