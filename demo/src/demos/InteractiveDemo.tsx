@@ -35,14 +35,8 @@ export const InteractiveDemo = () => {
           <PianoConfig
             instrumentName={instrumentName}
             noteRange={noteRange}
-            onChangeInstrumentName={(instrumentName) => {
-              setInstrumentName(instrumentName);
-              // stopAllNotes();
-            }}
-            onChangeNoteRange={(noteRange) => {
-              setNoteRange(noteRange);
-              // stopAllNotes();
-            }}
+            onChangeInstrumentName={setInstrumentName}
+            onChangeNoteRange={setNoteRange}
             instrumentList={instrumentList || [instrumentName]}
           />
         </div>

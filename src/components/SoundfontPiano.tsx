@@ -1,7 +1,7 @@
+import { useCallback, useEffect } from 'react';
 import { InstrumentName } from 'soundfont-player';
 import { Piano, PianoProps } from './Piano';
 import { useSoundfont } from '../hooks';
-import { useCallback } from 'react';
 
 interface SoundfontPianoProps extends Omit<PianoProps, 'onPlayNoteInput' | 'onStopNoteInput' | 'playNote' | 'stopNote'> {
   width: number;
@@ -25,11 +25,15 @@ export const SoundfontPiano = (props: SoundfontPianoProps) => {
     onStopNote = () => 0,
   } = props;
 
-  const { playNote, stopNote, isLoading } = useSoundfont({
+  const { playNote, stopNote, isLoading, stopAllNotes } = useSoundfont({
     audioContext,
     instrumentName,
     hostname: soundfontHostname,
   });
+
+  useEffect(() => {
+    stopAllNotes();
+  }, [instrumentName, noteRange, keyboardShortcuts, stopAllNotes]);
 
   const playNoteCallback = useCallback((midiNumber: number) => {
     onPlayNote(midiNumber);
