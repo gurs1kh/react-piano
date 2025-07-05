@@ -1,4 +1,4 @@
-import React from 'react';
+import { useState, useEffect, useCallback,  useRef, ReactNode } from 'react';
 import classNames from 'classnames';
 import difference from 'lodash.difference';
 import { Keyboard } from './Keyboard';
@@ -18,7 +18,7 @@ export interface ControlledPianoProps {
     midiNumber: number;
     isActive: boolean;
     isAccidental: boolean;
-  }) => React.ReactNode;
+  }) => ReactNode;
   className?: string;
   disabled?: boolean;
   width?: number;
@@ -29,168 +29,166 @@ export interface ControlledPianoProps {
   }>;
 }
 
-export class ControlledPiano extends React.Component<ControlledPianoProps> {
-  static defaultProps: Partial<ControlledPianoProps> = {
-    renderNoteLabel: ({ keyboardShortcut, isActive, isAccidental }) =>
-      keyboardShortcut ? (
-        <div
-          className={classNames('ReactPiano__NoteLabel', {
-            'ReactPiano__NoteLabel--active': isActive,
-            'ReactPiano__NoteLabel--accidental': isAccidental,
-            'ReactPiano__NoteLabel--natural': !isAccidental,
-          })}
-        >
-          {keyboardShortcut}
-        </div>
-      ) : null,
-  };
+const defaultRenderNoteLabel = ({
+  keyboardShortcut,
+  isActive,
+  isAccidental,
+}: {
+  keyboardShortcut?: string | null;
+  isActive: boolean;
+  isAccidental: boolean;
+}) =>
+  keyboardShortcut ? (
+    <div
+      className={classNames('ReactPiano__NoteLabel', {
+        'ReactPiano__NoteLabel--active': isActive,
+        'ReactPiano__NoteLabel--accidental': isAccidental,
+        'ReactPiano__NoteLabel--natural': !isAccidental,
+      })}
+    >
+      {keyboardShortcut}
+    </div>
+  ) : null;
 
-  state = {
-    isMouseDown: false,
-    useTouchEvents: false,
-  };
+export const ControlledPiano = (props: ControlledPianoProps) => {
+  const {
+    noteRange,
+    activeNotes,
+    playNote,
+    stopNote,
+    onPlayNoteInput,
+    onStopNoteInput,
+    renderNoteLabel = defaultRenderNoteLabel,
+    className,
+    disabled = false,
+    width,
+    keyWidthToHeight,
+    keyboardShortcuts,
+  } = props;
 
-  componentDidMount() {
-    window.addEventListener('keydown', this.onKeyDown);
-    window.addEventListener('keyup', this.onKeyUp);
-  }
+  const [isMouseDown, setIsMouseDown] = useState(false);
+  const [useTouchEvents, setUseTouchEvents] = useState(false);
+  const prevActiveNotesRef = useRef<number[]>(activeNotes);
 
-  componentWillUnmount() {
-    window.removeEventListener('keydown', this.onKeyDown);
-    window.removeEventListener('keyup', this.onKeyUp);
-  }
-
-  componentDidUpdate(prevProps: ControlledPianoProps) {
-    if (this.props.activeNotes !== prevProps.activeNotes) {
-      this.handleNoteChanges({
-        prevActiveNotes: prevProps.activeNotes || [],
-        nextActiveNotes: this.props.activeNotes || [],
-      });
-    }
-  }
-
-  handleNoteChanges = ({
-    prevActiveNotes,
-    nextActiveNotes,
-  }: {
-    prevActiveNotes: number[];
-    nextActiveNotes: number[];
-  }) => {
-    if (this.props.disabled) {
-      return;
-    }
-    const notesStopped = difference(prevActiveNotes, nextActiveNotes);
-    const notesStarted = difference(nextActiveNotes, prevActiveNotes);
+  useEffect(() => {
+    if (disabled) return;
+    const prevActiveNotes = prevActiveNotesRef.current || [];
+    const notesStopped = difference(prevActiveNotes, activeNotes);
+    const notesStarted = difference(activeNotes, prevActiveNotes);
     notesStarted.forEach((midiNumber) => {
-      this.props.playNote(midiNumber);
+      playNote(midiNumber);
     });
     notesStopped.forEach((midiNumber) => {
-      this.props.stopNote(midiNumber);
+      stopNote(midiNumber);
     });
-  };
+    prevActiveNotesRef.current = activeNotes;
+  }, [activeNotes, playNote, stopNote, disabled]);
 
-  getMidiNumberForKey = (key: string): number | null => {
-    if (!this.props.keyboardShortcuts) {
-      return null;
-    }
-    const shortcut = this.props.keyboardShortcuts.find((sh) => sh.key === key);
-    return shortcut ? shortcut.midiNumber : null;
-  };
+  const getMidiNumberForKey = useCallback(
+    (key: string): number | null => {
+      if (!keyboardShortcuts) return null;
+      const shortcut = keyboardShortcuts.find((sh) => sh.key === key);
+      return shortcut ? shortcut.midiNumber : null;
+    },
+    [keyboardShortcuts]
+  );
 
-  getKeyForMidiNumber = (midiNumber: number): string | null => {
-    if (!this.props.keyboardShortcuts) {
-      return null;
-    }
-    const shortcut = this.props.keyboardShortcuts.find((sh) => sh.midiNumber === midiNumber);
-    return shortcut ? shortcut.key : null;
-  };
+  const getKeyForMidiNumber = useCallback(
+    (midiNumber: number): string | null => {
+      if (!keyboardShortcuts) return null;
+      const shortcut = keyboardShortcuts.find((sh) => sh.midiNumber === midiNumber);
+      return shortcut ? shortcut.key : null;
+    },
+    [keyboardShortcuts]
+  );
 
-  onKeyDown = (event: KeyboardEvent) => {
-    if (event.ctrlKey || event.metaKey || event.shiftKey) {
-      return;
-    }
-    const midiNumber = this.getMidiNumberForKey(event.key);
-    if (midiNumber) {
-      this.onPlayNoteInput(midiNumber);
-    }
-  };
+  const handlePlayNoteInput = useCallback(
+    (midiNumber: number) => {
+      if (disabled) return;
+      onPlayNoteInput(midiNumber, activeNotes);
+    },
+    [onPlayNoteInput, activeNotes, disabled]
+  );
 
-  onKeyUp = (event: KeyboardEvent) => {
-    const midiNumber = this.getMidiNumberForKey(event.key);
-    if (midiNumber) {
-      this.onStopNoteInput(midiNumber);
-    }
-  };
+  const handleStopNoteInput = useCallback(
+    (midiNumber: number) => {
+      if (disabled) return;
+      onStopNoteInput(midiNumber, activeNotes);
+    },
+    [onStopNoteInput, activeNotes, disabled]
+  );
 
-  onPlayNoteInput = (midiNumber: number) => {
-    if (this.props.disabled) {
-      return;
-    }
-    this.props.onPlayNoteInput(midiNumber, this.props.activeNotes);
-  };
+  const handleKeyDown = useCallback(
+    (event: KeyboardEvent) => {
+      if (event.ctrlKey || event.metaKey || event.shiftKey) return;
+      const midiNumber = getMidiNumberForKey(event.key);
+      if (midiNumber) {
+        handlePlayNoteInput(midiNumber);
+      }
+    },
+    [getMidiNumberForKey, handlePlayNoteInput]
+  );
 
-  onStopNoteInput = (midiNumber: number) => {
-    if (this.props.disabled) {
-      return;
-    }
-    this.props.onStopNoteInput(midiNumber, this.props.activeNotes);
-  };
+  const handleKeyUp = useCallback(
+    (event: KeyboardEvent) => {
+      const midiNumber = getMidiNumberForKey(event.key);
+      if (midiNumber) {
+        handleStopNoteInput(midiNumber);
+      }
+    },
+    [getMidiNumberForKey, handleStopNoteInput]
+  );
 
-  onMouseDown = () => {
-    this.setState({
-      isMouseDown: true,
-    });
-  };
+  useEffect(() => {
+    window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('keyup', handleKeyUp);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('keyup', handleKeyUp);
+    };
+  }, [handleKeyDown, handleKeyUp]);
 
-  onMouseUp = () => {
-    this.setState({
-      isMouseDown: false,
-    });
-  };
+  const handleMouseDown = () => setIsMouseDown(true);
+  const handleMouseUp = () => setIsMouseDown(false);
+  const handleTouchStart = () => setUseTouchEvents(true);
 
-  onTouchStart = () => {
-    this.setState({
-      useTouchEvents: true,
-    });
-  };
+  const renderNoteLabelWithShortcut = useCallback(
+    ({
+      midiNumber,
+      isActive,
+      isAccidental,
+    }: {
+      midiNumber: number;
+      isActive: boolean;
+      isAccidental: boolean;
+    }) => {
+      const keyboardShortcut = getKeyForMidiNumber(midiNumber);
+      return renderNoteLabel({ keyboardShortcut, midiNumber, isActive, isAccidental });
+    },
+    [getKeyForMidiNumber, renderNoteLabel]
+  );
 
-  renderNoteLabel = ({
-    midiNumber,
-    isActive,
-    isAccidental,
-  }: {
-    midiNumber: number;
-    isActive: boolean;
-    isAccidental: boolean;
-  }) => {
-    const keyboardShortcut = this.getKeyForMidiNumber(midiNumber);
-    return this.props.renderNoteLabel &&
-      this.props.renderNoteLabel({ keyboardShortcut, midiNumber, isActive, isAccidental });
-  };
-
-  render() {
-    return (
-      <div
-        style={{ width: '100%', height: '100%' }}
-        onMouseDown={this.onMouseDown}
-        onMouseUp={this.onMouseUp}
-        onTouchStart={this.onTouchStart}
-        data-testid="container"
-      >
-        <Keyboard
-          noteRange={this.props.noteRange}
-          onPlayNoteInput={this.onPlayNoteInput}
-          onStopNoteInput={this.onStopNoteInput}
-          activeNotes={this.props.activeNotes}
-          className={this.props.className}
-          disabled={this.props.disabled}
-          width={this.props.width}
-          keyWidthToHeight={this.props.keyWidthToHeight}
-          gliss={this.state.isMouseDown}
-          useTouchEvents={this.state.useTouchEvents}
-          renderNoteLabel={this.renderNoteLabel}
-        />
-      </div>
-    );
-  }
-}
+  return (
+    <div
+      style={{ width: '100%', height: '100%' }}
+      onMouseDown={handleMouseDown}
+      onMouseUp={handleMouseUp}
+      onTouchStart={handleTouchStart}
+      data-testid="container"
+    >
+      <Keyboard
+        noteRange={noteRange}
+        onPlayNoteInput={handlePlayNoteInput}
+        onStopNoteInput={handleStopNoteInput}
+        activeNotes={activeNotes}
+        className={className}
+        disabled={disabled}
+        width={width}
+        keyWidthToHeight={keyWidthToHeight}
+        gliss={isMouseDown}
+        useTouchEvents={useTouchEvents}
+        renderNoteLabel={renderNoteLabelWithShortcut}
+      />
+    </div>
+  );
+};
