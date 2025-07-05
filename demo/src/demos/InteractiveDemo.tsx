@@ -11,7 +11,7 @@ export const InteractiveDemo = () => {
     first: MidiNumbers.fromNote('c3'),
     last: MidiNumbers.fromNote('f5'),
   });
-  const { keyboardShortcuts } = useKeyboardShortcuts(noteRange);
+  const { keyboardShortcuts } = useKeyboardShortcuts({ noteRange });
   const [ref, { width: containerWidth }] = useDimensions();
 
   return (
