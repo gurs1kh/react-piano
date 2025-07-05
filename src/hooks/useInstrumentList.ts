@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
+import { defaults } from '../config/defaults';
 
-type SoundfontName = 'MusyngKite' | 'FluidR3_GM';
-
-export const useInstrumentList = (hostname: string, soundfont: SoundfontName = 'MusyngKite') => {
+export const useInstrumentList = (hostname = defaults.soundfontHostname, soundfont = defaults.soundfont) => {
   const [instrumentList, setInstrumentList] = useState([]);
   
   useEffect(() => {

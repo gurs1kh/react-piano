@@ -1,6 +1,5 @@
 import React, { useEffect, useCallback } from 'react';
-import { MidiNumbers } from 'react-piano';
-import { InstrumentName } from 'soundfont-player';
+import { MidiNumbers, InstrumentName } from 'react-piano';
 import { AutoblurSelect } from './AutoBlurSelect';
 
 interface PianoConfigProps {
