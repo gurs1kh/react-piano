@@ -14,6 +14,8 @@ interface SoundfontPianoProps extends Omit<PianoProps, 'onPlayNoteInput' | 'onSt
   noteRange: NoteRange;
   keyboardShortcutInitialOffset?: number;
   enableKeyboardShortcuts?: boolean;
+  muted?: boolean;
+  audioOnly?: boolean;
 }
 
 export const SoundfontPiano = (props: SoundfontPianoProps) => {
@@ -28,6 +30,7 @@ export const SoundfontPiano = (props: SoundfontPianoProps) => {
     onStopNote = () => 0,
     keyboardShortcutInitialOffset = 0,
     enableKeyboardShortcuts = true,
+    muted = false,
   } = props;
 
   const { noteRange } = useNoteRange(noteRangeProp);
@@ -48,13 +51,13 @@ export const SoundfontPiano = (props: SoundfontPianoProps) => {
 
   const playNoteCallback = useCallback((midiNumber: number) => {
     onPlayNote(midiNumber);
-    playNote(midiNumber);
-  }, [onPlayNote, playNote]);
+    if (!muted) playNote(midiNumber);
+  }, [onPlayNote, playNote, muted]);
 
   const stopNoteCallback = useCallback((midiNumber: number) => {
     onStopNote(midiNumber);
-    stopNote(midiNumber);
-  }, [onStopNote, stopNote]);
+    if (!muted) stopNote(midiNumber);
+  }, [onStopNote, stopNote, muted]);
 
   return (
     <Piano

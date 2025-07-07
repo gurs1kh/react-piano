@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { SoundfontPiano, useKeyboardShortcuts, MidiNumbers, useInstrumentList, InstrumentName } from 'react-piano';
+import { SoundfontPiano, MidiNumbers, useInstrumentList, InstrumentName } from 'react-piano';
 import { MdArrowDownward } from 'react-icons/md';
 import useDimensions from 'react-use-dimensions';
 import { PianoConfig } from '../components/PianoConfig';
