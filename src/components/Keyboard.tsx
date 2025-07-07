@@ -24,6 +24,7 @@ export interface KeyboardProps {
   gliss?: boolean;
   useTouchEvents?: boolean;
   width?: number;
+  disableActiveStying?: boolean;
 }
 
 export const Keyboard = (props: KeyboardProps) => {
@@ -39,6 +40,7 @@ export const Keyboard = (props: KeyboardProps) => {
     gliss = false,
     useTouchEvents = false,
     width,
+    disableActiveStying,
   } = props;
 
   // Range of midi numbers on keyboard
@@ -86,7 +88,7 @@ export const Keyboard = (props: KeyboardProps) => {
             naturalKeyWidth={naturalKeyWidth}
             midiNumber={midiNumber}
             noteRange={noteRange}
-            active={isActive}
+            active={!disableActiveStying && isActive}
             accidental={isAccidental}
             disabled={disabled}
             onPlayNoteInput={onPlayNoteInput}

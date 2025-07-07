@@ -18,6 +18,7 @@ export interface ControlledPianoProps {
   }) => ReactNode;
   className?: string;
   disabled?: boolean;
+  disableActiveStying?: boolean;
   width?: number;
   keyWidthToHeight?: number;
   keyboardShortcuts?: Array<{
@@ -56,6 +57,7 @@ export const ControlledPiano = (props: ControlledPianoProps) => {
     renderNoteLabel = defaultRenderNoteLabel,
     className,
     disabled = false,
+    disableActiveStying = false,
     width,
     keyWidthToHeight,
     keyboardShortcuts,
@@ -100,9 +102,14 @@ export const ControlledPiano = (props: ControlledPianoProps) => {
       isAccidental: boolean;
     }) => {
       const keyboardShortcut = getKeyForMidiNumber(midiNumber);
-      return renderNoteLabel({ keyboardShortcut, midiNumber, isActive, isAccidental });
+      return renderNoteLabel({
+        keyboardShortcut,
+        midiNumber,
+        isActive: disableActiveStying ? false : isActive,
+        isAccidental
+      });
     },
-    [getKeyForMidiNumber, renderNoteLabel]
+    [getKeyForMidiNumber, renderNoteLabel, disableActiveStying]
   );
 
   return (
@@ -125,6 +132,7 @@ export const ControlledPiano = (props: ControlledPianoProps) => {
         gliss={isMouseDown}
         useTouchEvents={useTouchEvents}
         renderNoteLabel={renderNoteLabelWithShortcut}
+        disableActiveStying={disableActiveStying}
       />
     </div>
   );

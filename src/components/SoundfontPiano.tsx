@@ -41,6 +41,7 @@ export const SoundfontPiano = forwardRef<SoundfontPianoRef, SoundfontPianoProps>
     keyboardShortcutInitialOffset = 0,
     enableKeyboardShortcuts = true,
     muted = false,
+    audioOnly = false,
   } = props;
 
   const { noteRange } = useNoteRange(noteRangeProp);
@@ -94,6 +95,7 @@ export const SoundfontPiano = forwardRef<SoundfontPianoRef, SoundfontPianoProps>
       noteRange={noteRange}
       keyboardShortcuts={enableKeyboardShortcuts ? keyboardShortcuts : undefined}
       disabled={isLoading || disabled}
+      disableActiveStying={audioOnly}
       width={width}
     />
   );
