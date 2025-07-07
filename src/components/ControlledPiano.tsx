@@ -87,7 +87,7 @@ export const ControlledPiano = (props: ControlledPianoProps) => {
   const getMidiNumberForKey = useCallback(
     (key: string): number | null => {
       if (!keyboardShortcuts) return null;
-      const shortcut = keyboardShortcuts.find((sh) => sh.key === key);
+      const shortcut = keyboardShortcuts.find((sh) => sh.key === key.toLowerCase());
       return shortcut ? shortcut.midiNumber : null;
     },
     [keyboardShortcuts]
