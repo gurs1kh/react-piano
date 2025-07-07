@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, forwardRef, useImperativeHandle } from 'react';
+import { useEffect, useRef, forwardRef, useImperativeHandle } from 'react';
 import { InstrumentName } from 'soundfont-player';
 import { useKeyboardShortcuts, useSoundfont } from '../hooks';
 import { NoteRange, useNoteRange } from '../hooks/useNoteRange';
@@ -70,29 +70,21 @@ export const SoundfontPiano = forwardRef<SoundfontPianoRef, SoundfontPianoProps>
     prevActiveNotesRef.current = [];
   }, [instrumentName, noteRange, keyboardShortcuts, stopAllNotes]);
 
-  const playNoteCallback = useCallback((midiNumber: number) => {
-    onPlayNote(midiNumber);
-    if (!muted) playNote(midiNumber);
-  }, [onPlayNote, playNote, muted]);
-
-  const stopNoteCallback = useCallback((midiNumber: number) => {
-    onStopNote(midiNumber);
-    if (!muted) stopNote(midiNumber);
-  }, [onStopNote, stopNote, muted]);
-
   useEffect(() => {
     if (disabled) return;
     const prevActiveNotes = prevActiveNotesRef.current || [];
     const notesStopped = difference(prevActiveNotes, activeNotes);
     const notesStarted = difference(activeNotes, prevActiveNotes);
     notesStarted.forEach((midiNumber) => {
-      playNoteCallback(midiNumber);
+      onPlayNote(midiNumber);
+      if (!muted) playNote(midiNumber);
     });
     notesStopped.forEach((midiNumber) => {
-      stopNoteCallback(midiNumber);
+      onStopNote(midiNumber);
+      if (!muted) stopNote(midiNumber);
     });
     prevActiveNotesRef.current = activeNotes;
-  }, [activeNotes, playNoteCallback, stopNoteCallback, disabled]);
+  }, [activeNotes, disabled, muted, onPlayNote, playNote, onStopNote, stopNote]);
 
   return (
     <ControlledPiano
