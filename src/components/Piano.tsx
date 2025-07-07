@@ -1,4 +1,4 @@
-import React from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { ControlledPiano, ControlledPianoProps } from './ControlledPiano';
 
 export interface PianoProps extends Omit<ControlledPianoProps, 'activeNotes' | 'onPlayNoteInput' | 'onStopNoteInput'> {
@@ -7,64 +7,47 @@ export interface PianoProps extends Omit<ControlledPianoProps, 'activeNotes' | '
   onStopNoteInput?: (midiNumber: number, options: { prevActiveNotes: number[] }) => void;
 }
 
-interface PianoState {
-  activeNotes: number[];
-}
+export const Piano = (props: PianoProps) => {
+  const [activeNotes, setActiveNotes] = useState<number[]>(props.activeNotes || []);
 
-export class Piano extends React.Component<PianoProps, PianoState> {
-  constructor(props: PianoProps) {
-    super(props);
-    this.state = {
-      activeNotes: props.activeNotes || [],
-    };
-  }
-
-  componentDidUpdate(prevProps: PianoProps) {
-    // Make activeNotes "controllable" by using internal
-    // state by default, but allowing prop overrides.
+  // Make activeNotes "controllable" by using internal
+  // state by default, but allowing prop overrides.
+  useEffect(() => {
     if (
-      prevProps.activeNotes !== this.props.activeNotes &&
-      this.state.activeNotes !== this.props.activeNotes
+      props.activeNotes !== undefined &&
+      props.activeNotes !== activeNotes
     ) {
-      this.setState({
-        activeNotes: this.props.activeNotes || [],
-      });
+      setActiveNotes(props.activeNotes);
     }
-  }
+  }, [activeNotes, props.activeNotes]);
 
-  handlePlayNoteInput = (midiNumber: number) => {
-    this.setState((prevState) => {
-      if (this.props.onPlayNoteInput) {
-        this.props.onPlayNoteInput(midiNumber, { prevActiveNotes: prevState.activeNotes });
+  const handlePlayNoteInput = useCallback((midiNumber: number) => {
+    setActiveNotes((prevActiveNotes) => {
+      if (props.onPlayNoteInput) {
+        props.onPlayNoteInput(midiNumber, { prevActiveNotes });
       }
-      if (prevState.activeNotes.includes(midiNumber)) {
-        return null;
+      if (prevActiveNotes.includes(midiNumber)) {
+        return prevActiveNotes;
       }
-      return {
-        activeNotes: prevState.activeNotes.concat(midiNumber),
-      };
+      return prevActiveNotes.concat(midiNumber);
     });
-  };
+  }, [props]);
 
-  handleStopNoteInput = (midiNumber: number) => {
-    this.setState((prevState) => {
-      if (this.props.onStopNoteInput) {
-        this.props.onStopNoteInput(midiNumber, { prevActiveNotes: this.state.activeNotes });
+  const handleStopNoteInput = useCallback((midiNumber: number) => {
+    setActiveNotes((prevActiveNotes) => {
+      if (props.onStopNoteInput) {
+        props.onStopNoteInput(midiNumber, { prevActiveNotes });
       }
-      return {
-        activeNotes: prevState.activeNotes.filter((note) => midiNumber !== note),
-      };
+      return prevActiveNotes.filter((note) => midiNumber !== note);
     });
-  };
+  }, [props]);
 
-  render() {
-    return (
-      <ControlledPiano
-        {...this.props}
-        activeNotes={this.state.activeNotes}
-        onPlayNoteInput={this.handlePlayNoteInput}
-        onStopNoteInput={this.handleStopNoteInput}
-      />
-    );
-  }
-}
+  return (
+    <ControlledPiano
+      {...props}
+      activeNotes={activeNotes}
+      onPlayNoteInput={handlePlayNoteInput}
+      onStopNoteInput={handleStopNoteInput}
+    />
+  );
+};
