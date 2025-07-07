@@ -1,7 +1,7 @@
 import { useCallback, useEffect } from 'react';
 import { InstrumentName } from 'soundfont-player';
 import { Piano, PianoProps } from './Piano';
-import { useSoundfont } from '../hooks';
+import { useKeyboardShortcuts, useSoundfont } from '../hooks';
 import { NoteRange, useNoteRange } from '../hooks/useNoteRange';
 
 interface SoundfontPianoProps extends Omit<PianoProps, 'onPlayNoteInput' | 'onStopNoteInput' | 'playNote' | 'stopNote' | 'noteRange'> {
@@ -12,6 +12,8 @@ interface SoundfontPianoProps extends Omit<PianoProps, 'onPlayNoteInput' | 'onSt
   onPlayNote?: (midiNumber: number) => void;
   onStopNote?: (midiNumber: number) => void;
   noteRange: NoteRange;
+  keyboardShortcutInitialOffset?: number;
+  enableKeyboardShortcuts?: boolean;
 }
 
 export const SoundfontPiano = (props: SoundfontPianoProps) => {
@@ -21,13 +23,19 @@ export const SoundfontPiano = (props: SoundfontPianoProps) => {
     noteRange: noteRangeProp,
     audioContext,
     soundfontHostname,
-    keyboardShortcuts,
     disabled = false,
     onPlayNote = () => 0,
     onStopNote = () => 0,
+    keyboardShortcutInitialOffset = 0,
+    enableKeyboardShortcuts = true,
   } = props;
 
   const { noteRange } = useNoteRange(noteRangeProp);
+  const { keyboardShortcuts } = useKeyboardShortcuts({
+    noteRange,
+    initialOffset: keyboardShortcutInitialOffset,
+  });
+
   const { playNote, stopNote, isLoading, stopAllNotes } = useSoundfont({
     audioContext,
     instrumentName,
@@ -51,7 +59,7 @@ export const SoundfontPiano = (props: SoundfontPianoProps) => {
   return (
     <Piano
       noteRange={noteRange}
-      keyboardShortcuts={keyboardShortcuts}
+      keyboardShortcuts={enableKeyboardShortcuts ? keyboardShortcuts : undefined}
       playNote={playNoteCallback}
       stopNote={stopNoteCallback}
       disabled={isLoading || disabled}

@@ -11,7 +11,6 @@ export const InteractiveDemo = () => {
     first: MidiNumbers.fromNote('c3'),
     last: MidiNumbers.fromNote('f5'),
   });
-  const { keyboardShortcuts } = useKeyboardShortcuts({ noteRange });
   const [dimensionsRef, { width: containerWidth }] = useDimensions();
 
   return (
@@ -26,7 +25,6 @@ export const InteractiveDemo = () => {
         <SoundfontPiano
           instrumentName={instrumentName}
           noteRange={noteRange}
-          keyboardShortcuts={keyboardShortcuts}
           width={containerWidth}
         />
       </div>
