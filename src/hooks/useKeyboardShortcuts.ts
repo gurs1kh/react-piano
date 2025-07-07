@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { KeyboardShortcuts } from "../utils";
 import { NoteRange, useNoteRange } from "./useNoteRange";
 
@@ -11,11 +11,13 @@ export const useKeyboardShortcuts = ({ noteRange: noteRangeProp, initialOffset =
   const { noteRange } = useNoteRange(noteRangeProp);
   const [offset, setOffset] = useState(initialOffset);
 
-  const keyboardShortcuts = KeyboardShortcuts.create({
-    firstNote: noteRange.first + offset,
-    lastNote: noteRange.last + offset,
-    keyboardConfig: KeyboardShortcuts.HOME_ROW,
-  });
+  const keyboardShortcuts = useMemo(() => {
+    return KeyboardShortcuts.create({
+      firstNote: noteRange.first + offset,
+      lastNote: noteRange.last + offset,
+      keyboardConfig: KeyboardShortcuts.HOME_ROW,
+    });
+  }, [noteRange, offset]);
 
   const handleKeyDown = useCallback(
     (event: KeyboardEvent) => {
