@@ -18,23 +18,19 @@ export const PlaybackDemo =() => {
         setActiveNotesIndex((prevIndex) => (prevIndex + 1) % song.notes.length);
       }, song.playDuration);
     } else {
-      if (playbackIntervalRef.current) {
-        clearInterval(playbackIntervalRef.current);
-      }
+      clearInterval(playbackIntervalRef.current || 0);
       pianoRef.current?.stopAllNotes();
       setActiveNotesIndex(0);
     }
     return () => {
-      if (!playbackIntervalRef.current) return;
-      clearInterval(playbackIntervalRef.current);
+      clearInterval(playbackIntervalRef.current || 0);
+      pianoRef.current?.stopAllNotes();
     };
   }, [isPlaying, song.notes.length]);
 
   useEffect(() => {
     return () => {
-      if (playbackIntervalRef.current) {
-        clearInterval(playbackIntervalRef.current);
-      }
+      clearInterval(playbackIntervalRef.current || 0);
       pianoRef.current?.stopAllNotes();
     };
   }, []);
