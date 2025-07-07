@@ -1,10 +1,11 @@
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { InstrumentName } from 'soundfont-player';
-import { Piano, PianoProps } from './Piano';
 import { useKeyboardShortcuts, useSoundfont } from '../hooks';
 import { NoteRange, useNoteRange } from '../hooks/useNoteRange';
+import difference from 'lodash.difference';
+import { ControlledPiano, ControlledPianoProps } from './ControlledPiano';
 
-interface SoundfontPianoProps extends Omit<PianoProps, 'onPlayNoteInput' | 'onStopNoteInput' | 'playNote' | 'stopNote' | 'noteRange'> {
+interface SoundfontPianoProps extends Omit<ControlledPianoProps, 'onPlayNoteInput' | 'onStopNoteInput' | 'playNote' | 'stopNote' | 'noteRange'> {
   width: number;
   instrumentName?: InstrumentName;
   audioContext?: AudioContext;
@@ -20,6 +21,8 @@ interface SoundfontPianoProps extends Omit<PianoProps, 'onPlayNoteInput' | 'onSt
 
 export const SoundfontPiano = (props: SoundfontPianoProps) => {
   const {
+    activeNotes,
+    onChangeActiveNotes = () => 0,
     width,
     instrumentName,
     noteRange: noteRangeProp,
@@ -59,12 +62,28 @@ export const SoundfontPiano = (props: SoundfontPianoProps) => {
     if (!muted) stopNote(midiNumber);
   }, [onStopNote, stopNote, muted]);
 
+  const prevActiveNotesRef = useRef<number[]>(activeNotes);
+
+  useEffect(() => {
+    if (disabled) return;
+    const prevActiveNotes = prevActiveNotesRef.current || [];
+    const notesStopped = difference(prevActiveNotes, activeNotes);
+    const notesStarted = difference(activeNotes, prevActiveNotes);
+    notesStarted.forEach((midiNumber) => {
+      playNoteCallback(midiNumber);
+    });
+    notesStopped.forEach((midiNumber) => {
+      stopNoteCallback(midiNumber);
+    });
+    prevActiveNotesRef.current = activeNotes;
+  }, [activeNotes, playNoteCallback, stopNoteCallback, disabled]);
+
   return (
-    <Piano
+    <ControlledPiano
+      activeNotes={activeNotes}
+      onChangeActiveNotes={onChangeActiveNotes}
       noteRange={noteRange}
       keyboardShortcuts={enableKeyboardShortcuts ? keyboardShortcuts : undefined}
-      playNote={playNoteCallback}
-      stopNote={stopNoteCallback}
       disabled={isLoading || disabled}
       width={width}
     />

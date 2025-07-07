@@ -1,6 +1,5 @@
-import { useState, useEffect, useCallback,  useRef, ReactNode } from 'react';
+import { useState, useEffect, useCallback, ReactNode } from 'react';
 import classNames from 'classnames';
-import difference from 'lodash.difference';
 import { Keyboard } from './Keyboard';
 
 export interface ControlledPianoProps {
@@ -9,10 +8,7 @@ export interface ControlledPianoProps {
     last: number;
   };
   activeNotes: number[];
-  playNote: (midiNumber: number) => void;
-  stopNote: (midiNumber: number) => void;
-  onPlayNoteInput: (midiNumber: number, prevActiveNotes: number[]) => void;
-  onStopNoteInput: (midiNumber: number, prevActiveNotes: number[]) => void;
+  onChangeActiveNotes?: (activeNotes: number[]) => void;
   renderNoteLabel?: (params: {
     keyboardShortcut?: string | null;
     midiNumber: number;
@@ -54,10 +50,7 @@ export const ControlledPiano = (props: ControlledPianoProps) => {
   const {
     noteRange,
     activeNotes,
-    playNote,
-    stopNote,
-    onPlayNoteInput,
-    onStopNoteInput,
+    onChangeActiveNotes = () => 0,
     renderNoteLabel = defaultRenderNoteLabel,
     className,
     disabled = false,
@@ -68,21 +61,6 @@ export const ControlledPiano = (props: ControlledPianoProps) => {
 
   const [isMouseDown, setIsMouseDown] = useState(false);
   const [useTouchEvents, setUseTouchEvents] = useState(false);
-  const prevActiveNotesRef = useRef<number[]>(activeNotes);
-
-  useEffect(() => {
-    if (disabled) return;
-    const prevActiveNotes = prevActiveNotesRef.current || [];
-    const notesStopped = difference(prevActiveNotes, activeNotes);
-    const notesStarted = difference(activeNotes, prevActiveNotes);
-    notesStarted.forEach((midiNumber) => {
-      playNote(midiNumber);
-    });
-    notesStopped.forEach((midiNumber) => {
-      stopNote(midiNumber);
-    });
-    prevActiveNotesRef.current = activeNotes;
-  }, [activeNotes, playNote, stopNote, disabled]);
 
   const getMidiNumberForKey = useCallback(
     (key: string): number | null => {
@@ -102,20 +80,28 @@ export const ControlledPiano = (props: ControlledPianoProps) => {
     [keyboardShortcuts]
   );
 
+  const getActiveNotesSet = useCallback(() => new Set(activeNotes), [activeNotes]);
+
   const handlePlayNoteInput = useCallback(
     (midiNumber: number) => {
       if (disabled) return;
-      onPlayNoteInput(midiNumber, activeNotes);
+
+      const activeNotesSet = getActiveNotesSet();
+      activeNotesSet.add(midiNumber);
+      onChangeActiveNotes([...activeNotesSet]);
     },
-    [onPlayNoteInput, activeNotes, disabled]
+    [disabled, onChangeActiveNotes, getActiveNotesSet]
   );
 
   const handleStopNoteInput = useCallback(
     (midiNumber: number) => {
       if (disabled) return;
-      onStopNoteInput(midiNumber, activeNotes);
+
+      const activeNotesSet = getActiveNotesSet();
+      activeNotesSet.delete(midiNumber);
+      onChangeActiveNotes([...activeNotesSet]);
     },
-    [onStopNoteInput, activeNotes, disabled]
+    [disabled, onChangeActiveNotes, getActiveNotesSet]
   );
 
   const handleKeyDown = useCallback(

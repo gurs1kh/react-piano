@@ -11,6 +11,7 @@ export const InteractiveDemo = () => {
     first: MidiNumbers.fromNote('c3'),
     last: MidiNumbers.fromNote('f5'),
   });
+  const [activeNotes, setActiveNotes] = useState<number[]>([]);
   const [dimensionsRef, { width: containerWidth }] = useDimensions();
 
   return (
@@ -23,6 +24,8 @@ export const InteractiveDemo = () => {
       </div>
       <div className="mt-4" ref={dimensionsRef}>
         <SoundfontPiano
+          activeNotes={activeNotes}
+          onChangeActiveNotes={setActiveNotes}
           instrumentName={instrumentName}
           noteRange={noteRange}
           width={containerWidth}

@@ -33,12 +33,12 @@ export const App = () => (
           <InteractiveDemo />
         </div>
       </div>
-      <hr className="mt-5" />
+      {/* <hr className="mt-5" />
       <div className="row mt-5">
         <div className="col-md-8 offset-md-2">
           <PlaybackDemo />
         </div>
-      </div>
+      </div> */}
       <hr className="mt-5" />
       <div className="row mt-5">
         <div className="col">
