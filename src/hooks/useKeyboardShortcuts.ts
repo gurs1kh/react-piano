@@ -5,9 +5,18 @@ import { NoteRange, useNoteRange } from "./useNoteRange";
 interface UseKeyboardShortcutsParams {
   noteRange: NoteRange;
   initialOffset?: number;
+  onAddActiveNote?: (midiNumber: number) => void;
+  onRemoveActiveNote?: (midiNumber: number) => void;
 }
 
-export const useKeyboardShortcuts = ({ noteRange: noteRangeProp, initialOffset = 0 }: UseKeyboardShortcutsParams) => {
+export const useKeyboardShortcuts = (props: UseKeyboardShortcutsParams) => {
+  const {
+    noteRange: noteRangeProp,
+    initialOffset = 0,
+    onAddActiveNote = () => 0,
+    onRemoveActiveNote = () => 0,
+  } = props;
+
   const { noteRange } = useNoteRange(noteRangeProp);
   const [offset, setOffset] = useState(initialOffset);
 
@@ -19,7 +28,7 @@ export const useKeyboardShortcuts = ({ noteRange: noteRangeProp, initialOffset =
     });
   }, [noteRange, offset]);
 
-  const handleKeyDown = useCallback(
+  const handleOffsetKeyDown = useCallback(
     (event: KeyboardEvent) => {
       const delta = {
         ArrowLeft: -1,
@@ -45,12 +54,46 @@ export const useKeyboardShortcuts = ({ noteRange: noteRangeProp, initialOffset =
     [noteRange, offset, keyboardShortcuts]
   );
 
+  const getMidiNumberForKey = useCallback(
+    (key: string): number | null => {
+      if (!keyboardShortcuts) return null;
+      const shortcut = keyboardShortcuts.find((sh) => sh.key === key.toLowerCase());
+      return shortcut ? shortcut.midiNumber : null;
+    },
+    [keyboardShortcuts]
+  );
+
+  const handleKeyDown = useCallback(
+    (event: KeyboardEvent) => {
+      if (event.ctrlKey || event.metaKey || event.shiftKey) return;
+      const midiNumber = getMidiNumberForKey(event.key);
+      if (!midiNumber) return;
+
+      onAddActiveNote(midiNumber);
+    },
+    [getMidiNumberForKey, onAddActiveNote]
+  );
+
+  const handleKeyUp = useCallback(
+    (event: KeyboardEvent) => {
+      const midiNumber = getMidiNumberForKey(event.key);
+      if (!midiNumber) return;
+
+      onRemoveActiveNote(midiNumber);
+    },
+    [getMidiNumberForKey, onRemoveActiveNote]
+  );
+
   useEffect(() => {
     window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('keyup', handleKeyUp);
+    window.addEventListener('keyup', handleOffsetKeyDown);
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('keyup', handleKeyUp);
+      window.removeEventListener('keyup', handleOffsetKeyDown);
     };
-  }, [handleKeyDown]);
+  }, [handleKeyDown, handleKeyUp, handleOffsetKeyDown]);
 
   return {
     keyboardShortcuts,

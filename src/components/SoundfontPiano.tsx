@@ -44,10 +44,6 @@ export const SoundfontPiano = forwardRef<SoundfontPianoRef, SoundfontPianoProps>
   } = props;
 
   const { noteRange } = useNoteRange(noteRangeProp);
-  const { keyboardShortcuts } = useKeyboardShortcuts({
-    noteRange,
-    initialOffset: keyboardShortcutInitialOffset,
-  });
   const prevActiveNotesRef = useRef<number[]>(activeNotes);
 
   const { playNote, stopNote, isLoading, stopAllNotes } = useSoundfont({
@@ -61,6 +57,13 @@ export const SoundfontPiano = forwardRef<SoundfontPianoRef, SoundfontPianoProps>
     stopNote,
     stopAllNotes,
   }), [playNote, stopNote, stopAllNotes]);
+
+  const { keyboardShortcuts } = useKeyboardShortcuts({
+    noteRange,
+    initialOffset: keyboardShortcutInitialOffset,
+    onAddActiveNote,
+    onRemoveActiveNote,
+  });
 
   useEffect(() => {
     stopAllNotes();

@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, ReactNode } from 'react';
+import { useState, useCallback, ReactNode } from 'react';
 import classNames from 'classnames';
 import { Keyboard } from './Keyboard';
 
@@ -64,15 +64,6 @@ export const ControlledPiano = (props: ControlledPianoProps) => {
   const [isMouseDown, setIsMouseDown] = useState(false);
   const [useTouchEvents, setUseTouchEvents] = useState(false);
 
-  const getMidiNumberForKey = useCallback(
-    (key: string): number | null => {
-      if (!keyboardShortcuts) return null;
-      const shortcut = keyboardShortcuts.find((sh) => sh.key === key.toLowerCase());
-      return shortcut ? shortcut.midiNumber : null;
-    },
-    [keyboardShortcuts]
-  );
-
   const getKeyForMidiNumber = useCallback(
     (midiNumber: number): string | null => {
       if (!keyboardShortcuts) return null;
@@ -93,36 +84,6 @@ export const ControlledPiano = (props: ControlledPianoProps) => {
 
     onRemoveActiveNote(midiNumber);
   }, [disabled, onRemoveActiveNote]);
-
-  const handleKeyDown = useCallback(
-    (event: KeyboardEvent) => {
-      if (event.ctrlKey || event.metaKey || event.shiftKey) return;
-      const midiNumber = getMidiNumberForKey(event.key);
-      if (midiNumber) {
-        handlePlayNoteInput(midiNumber);
-      }
-    },
-    [getMidiNumberForKey, handlePlayNoteInput]
-  );
-
-  const handleKeyUp = useCallback(
-    (event: KeyboardEvent) => {
-      const midiNumber = getMidiNumberForKey(event.key);
-      if (midiNumber) {
-        handleStopNoteInput(midiNumber);
-      }
-    },
-    [getMidiNumberForKey, handleStopNoteInput]
-  );
-
-  useEffect(() => {
-    window.addEventListener('keydown', handleKeyDown);
-    window.addEventListener('keyup', handleKeyUp);
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-      window.removeEventListener('keyup', handleKeyUp);
-    };
-  }, [handleKeyDown, handleKeyUp]);
 
   const handleMouseDown = () => setIsMouseDown(true);
   const handleMouseUp = () => setIsMouseDown(false);
