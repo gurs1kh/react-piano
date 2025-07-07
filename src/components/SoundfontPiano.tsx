@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef, forwardRef, useImperativeHandle } from 'react';
 import { InstrumentName } from 'soundfont-player';
 import { useKeyboardShortcuts, useSoundfont } from '../hooks';
 import { NoteRange, useNoteRange } from '../hooks/useNoteRange';
@@ -19,7 +19,13 @@ interface SoundfontPianoProps extends Omit<ControlledPianoProps, 'onPlayNoteInpu
   audioOnly?: boolean;
 }
 
-export const SoundfontPiano = (props: SoundfontPianoProps) => {
+export interface SoundfontPianoRef {
+  playNote: (midiNumber: number) => void;
+  stopNote: (midiNumber: number) => void;
+  stopAllNotes: () => void;
+}
+
+export const SoundfontPiano = forwardRef<SoundfontPianoRef, SoundfontPianoProps>((props, ref) => {
   const {
     activeNotes,
     onAddActiveNote = () => 0,
@@ -42,6 +48,7 @@ export const SoundfontPiano = (props: SoundfontPianoProps) => {
     noteRange,
     initialOffset: keyboardShortcutInitialOffset,
   });
+  const prevActiveNotesRef = useRef<number[]>(activeNotes);
 
   const { playNote, stopNote, isLoading, stopAllNotes } = useSoundfont({
     audioContext,
@@ -49,8 +56,15 @@ export const SoundfontPiano = (props: SoundfontPianoProps) => {
     hostname: soundfontHostname,
   });
 
+  useImperativeHandle(ref, () => ({
+    playNote,
+    stopNote,
+    stopAllNotes,
+  }), [playNote, stopNote, stopAllNotes]);
+
   useEffect(() => {
     stopAllNotes();
+    prevActiveNotesRef.current = [];
   }, [instrumentName, noteRange, keyboardShortcuts, stopAllNotes]);
 
   const playNoteCallback = useCallback((midiNumber: number) => {
@@ -62,8 +76,6 @@ export const SoundfontPiano = (props: SoundfontPianoProps) => {
     onStopNote(midiNumber);
     if (!muted) stopNote(midiNumber);
   }, [onStopNote, stopNote, muted]);
-
-  const prevActiveNotesRef = useRef<number[]>(activeNotes);
 
   useEffect(() => {
     if (disabled) return;
@@ -90,4 +102,6 @@ export const SoundfontPiano = (props: SoundfontPianoProps) => {
       width={width}
     />
   );
-}
+});
+
+SoundfontPiano.displayName = 'SoundfontPiano';

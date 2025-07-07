@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { Piano, MidiNumbers, useSoundfont } from 'react-piano';
+import { MidiNumbers, SoundfontPiano, SoundfontPianoRef } from 'react-piano';
 import classNames from 'classnames';
 import useDimensions from 'react-use-dimensions';
 import { lostWoods as song } from '../data/songs'; // Adjust the import path as necessary
@@ -8,9 +8,9 @@ export const PlaybackDemo =() => {
   const [activeNotesIndex, setActiveNotesIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const playbackIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const pianoRef = useRef<SoundfontPianoRef>(null);
 
   const [dimensionsRef, { width: containerWidth }] = useDimensions();
-  const { isLoading, playNote, stopNote, stopAllNotes } = useSoundfont({ instrumentName: song.instrumentName });
 
   useEffect(() => {
     if (isPlaying) {
@@ -21,21 +21,21 @@ export const PlaybackDemo =() => {
       if (playbackIntervalRef.current) {
         clearInterval(playbackIntervalRef.current);
       }
-      stopAllNotes();
+      pianoRef.current?.stopAllNotes();
       setActiveNotesIndex(0);
     }
     return () => {
       if (!playbackIntervalRef.current) return;
       clearInterval(playbackIntervalRef.current);
     };
-  }, [isPlaying, song.notes.length, stopAllNotes]);
+  }, [isPlaying, song.notes.length]);
 
   useEffect(() => {
     return () => {
       if (playbackIntervalRef.current) {
         clearInterval(playbackIntervalRef.current);
       }
-      stopAllNotes();
+      pianoRef.current?.stopAllNotes();
     };
   }, []);
 
@@ -65,13 +65,14 @@ export const PlaybackDemo =() => {
         </div>
       </div>
       <div className="mt-4" ref={dimensionsRef}>
-        <Piano
+        <SoundfontPiano
+          ref={pianoRef}
+          enableKeyboardShortcuts={false}
+          instrumentName={song.instrumentName}
           activeNotes={isPlaying ? song.notes[activeNotesIndex] : []}
           noteRange={noteRange}
           width={containerWidth}
-          playNote={playNote}
-          stopNote={stopNote}
-          disabled={isLoading || !isPlaying}
+          disabled={!isPlaying}
         />
       </div>
     </div>
