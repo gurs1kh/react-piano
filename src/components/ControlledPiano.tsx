@@ -8,7 +8,8 @@ export interface ControlledPianoProps {
     last: number;
   };
   activeNotes: number[];
-  onChangeActiveNotes?: (activeNotes: number[]) => void;
+  onAddActiveNote?: (midiNumber: number) => void;
+  onRemoveActiveNote?: (midiNumber: number) => void;
   renderNoteLabel?: (params: {
     keyboardShortcut?: string | null;
     midiNumber: number;
@@ -50,7 +51,8 @@ export const ControlledPiano = (props: ControlledPianoProps) => {
   const {
     noteRange,
     activeNotes,
-    onChangeActiveNotes = () => 0,
+    onAddActiveNote = () => 0,
+    onRemoveActiveNote = () => 0,
     renderNoteLabel = defaultRenderNoteLabel,
     className,
     disabled = false,
@@ -80,29 +82,17 @@ export const ControlledPiano = (props: ControlledPianoProps) => {
     [keyboardShortcuts]
   );
 
-  const getActiveNotesSet = useCallback(() => new Set(activeNotes), [activeNotes]);
+  const handlePlayNoteInput = useCallback((midiNumber: number) => {
+    if (disabled) return;
 
-  const handlePlayNoteInput = useCallback(
-    (midiNumber: number) => {
-      if (disabled) return;
+    onAddActiveNote(midiNumber);
+  },[disabled, onAddActiveNote]);
 
-      const activeNotesSet = getActiveNotesSet();
-      activeNotesSet.add(midiNumber);
-      onChangeActiveNotes([...activeNotesSet]);
-    },
-    [disabled, onChangeActiveNotes, getActiveNotesSet]
-  );
+  const handleStopNoteInput = useCallback((midiNumber: number) => {
+    if (disabled) return;
 
-  const handleStopNoteInput = useCallback(
-    (midiNumber: number) => {
-      if (disabled) return;
-
-      const activeNotesSet = getActiveNotesSet();
-      activeNotesSet.delete(midiNumber);
-      onChangeActiveNotes([...activeNotesSet]);
-    },
-    [disabled, onChangeActiveNotes, getActiveNotesSet]
-  );
+    onRemoveActiveNote(midiNumber);
+  }, [disabled, onRemoveActiveNote]);
 
   const handleKeyDown = useCallback(
     (event: KeyboardEvent) => {

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { SoundfontPiano, MidiNumbers, useInstrumentList, InstrumentName } from 'react-piano';
+import { SoundfontPiano, MidiNumbers, useInstrumentList, InstrumentName, useActiveNotes } from 'react-piano';
 import { MdArrowDownward } from 'react-icons/md';
 import useDimensions from 'react-use-dimensions';
 import { PianoConfig } from '../components/PianoConfig';
@@ -11,7 +11,7 @@ export const InteractiveDemo = () => {
     first: MidiNumbers.fromNote('c3'),
     last: MidiNumbers.fromNote('f5'),
   });
-  const [activeNotes, setActiveNotes] = useState<number[]>([]);
+  const { activeNotes, addActiveNote, removeActiveNote } = useActiveNotes();
   const [dimensionsRef, { width: containerWidth }] = useDimensions();
 
   return (
@@ -25,7 +25,8 @@ export const InteractiveDemo = () => {
       <div className="mt-4" ref={dimensionsRef}>
         <SoundfontPiano
           activeNotes={activeNotes}
-          onChangeActiveNotes={setActiveNotes}
+          onAddActiveNote={addActiveNote}
+          onRemoveActiveNote={removeActiveNote}
           instrumentName={instrumentName}
           noteRange={noteRange}
           width={containerWidth}

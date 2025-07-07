@@ -22,7 +22,8 @@ interface SoundfontPianoProps extends Omit<ControlledPianoProps, 'onPlayNoteInpu
 export const SoundfontPiano = (props: SoundfontPianoProps) => {
   const {
     activeNotes,
-    onChangeActiveNotes = () => 0,
+    onAddActiveNote = () => 0,
+    onRemoveActiveNote = () => 0,
     width,
     instrumentName,
     noteRange: noteRangeProp,
@@ -81,7 +82,8 @@ export const SoundfontPiano = (props: SoundfontPianoProps) => {
   return (
     <ControlledPiano
       activeNotes={activeNotes}
-      onChangeActiveNotes={onChangeActiveNotes}
+      onAddActiveNote={onAddActiveNote}
+      onRemoveActiveNote={onRemoveActiveNote}
       noteRange={noteRange}
       keyboardShortcuts={enableKeyboardShortcuts ? keyboardShortcuts : undefined}
       disabled={isLoading || disabled}
