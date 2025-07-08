@@ -7,7 +7,7 @@ export interface ControlledPianoProps {
     first: number;
     last: number;
   };
-  activeNotes: number[];
+  activeNotes?: number[];
   onAddActiveNote?: (midiNumber: number) => void;
   onRemoveActiveNote?: (midiNumber: number) => void;
   renderNoteLabel?: (params: {
@@ -51,7 +51,7 @@ const defaultRenderNoteLabel = ({
 export const ControlledPiano = (props: ControlledPianoProps) => {
   const {
     noteRange,
-    activeNotes,
+    activeNotes = [],
     onAddActiveNote = () => 0,
     onRemoveActiveNote = () => 0,
     renderNoteLabel = defaultRenderNoteLabel,

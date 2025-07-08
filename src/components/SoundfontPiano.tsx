@@ -27,7 +27,7 @@ export interface SoundfontPianoRef {
 
 export const SoundfontPiano = forwardRef<SoundfontPianoRef, SoundfontPianoProps>((props, ref) => {
   const {
-    activeNotes,
+    activeNotes = [],
     onAddActiveNote = () => 0,
     onRemoveActiveNote = () => 0,
     width,
