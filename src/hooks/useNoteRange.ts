@@ -12,12 +12,12 @@ export type NoteRange = {
 export const useNoteRange = (noteRangeProp: NoteRange) => {
   const noteRange = useMemo(() => {
     return (typeof noteRangeProp.first === 'number')
-      ? noteRangeProp
+      ? { first: noteRangeProp.first, last: noteRangeProp.last }
       : {
         first: MidiNumbers.fromNote(noteRangeProp.first),
         last: MidiNumbers.fromNote(noteRangeProp.last),
       };
-  }, [noteRangeProp]);
+  }, [noteRangeProp.first, noteRangeProp.last]);
 
   return { noteRange };
 }
