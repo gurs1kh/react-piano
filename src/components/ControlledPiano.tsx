@@ -8,6 +8,7 @@ export interface ControlledPianoProps {
     last: number;
   };
   activeNotes?: number[];
+  highlightedNotes?: number[];
   onAddActiveNote?: (midiNumber: number) => void;
   onRemoveActiveNote?: (midiNumber: number) => void;
   renderNoteLabel?: (params: {
@@ -30,16 +31,19 @@ export interface ControlledPianoProps {
 const defaultRenderNoteLabel = ({
   keyboardShortcut,
   isActive,
+  isHighlighted,
   isAccidental,
 }: {
   keyboardShortcut?: string | null;
   isActive: boolean;
+  isHighlighted: boolean;
   isAccidental: boolean;
 }) =>
   keyboardShortcut ? (
     <div
       className={classNames('ReactPiano__NoteLabel', {
         'ReactPiano__NoteLabel--active': isActive,
+        'ReactPiano__NoteLabel--highlighted': isHighlighted && !isActive,
         'ReactPiano__NoteLabel--accidental': isAccidental,
         'ReactPiano__NoteLabel--natural': !isAccidental,
       })}
@@ -52,6 +56,7 @@ export const ControlledPiano = (props: ControlledPianoProps) => {
   const {
     noteRange,
     activeNotes = [],
+    highlightedNotes = [],
     onAddActiveNote = () => 0,
     onRemoveActiveNote = () => 0,
     renderNoteLabel = defaultRenderNoteLabel,
@@ -95,10 +100,12 @@ export const ControlledPiano = (props: ControlledPianoProps) => {
     ({
       midiNumber,
       isActive,
+      isHighlighted,
       isAccidental,
     }: {
       midiNumber: number;
       isActive: boolean;
+      isHighlighted: boolean;
       isAccidental: boolean;
     }) => {
       const keyboardShortcut = getKeyForMidiNumber(midiNumber);
@@ -106,6 +113,7 @@ export const ControlledPiano = (props: ControlledPianoProps) => {
         keyboardShortcut,
         midiNumber,
         isActive: disableActiveStying ? false : isActive,
+        isHighlighted,
         isAccidental
       });
     },
@@ -125,6 +133,7 @@ export const ControlledPiano = (props: ControlledPianoProps) => {
         onPlayNoteInput={handlePlayNoteInput}
         onStopNoteInput={handleStopNoteInput}
         activeNotes={activeNotes}
+        highlightedNotes={highlightedNotes}
         className={className}
         disabled={disabled}
         width={width}

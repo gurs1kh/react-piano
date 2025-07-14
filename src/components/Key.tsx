@@ -10,6 +10,7 @@ export interface KeyProps {
   useTouchEvents?: boolean;
   accidental?: boolean;
   active?: boolean;
+  highlighted?: boolean;
   disabled?: boolean;
   onPlayNoteInput: (midiNumber: number) => void;
   onStopNoteInput: (midiNumber: number) => void;
@@ -46,6 +47,7 @@ export const Key = (props: KeyProps) => {
     useTouchEvents = false,
     accidental = false,
     active = false,
+    highlighted = false,
     disabled = false,
     onPlayNoteInput,
     onStopNoteInput,
@@ -86,6 +88,7 @@ export const Key = (props: KeyProps) => {
         'ReactPiano__Key--accidental': accidental,
         'ReactPiano__Key--natural': !accidental,
         'ReactPiano__Key--disabled': disabled,
+        'ReactPiano__Key--highlighted': highlighted && !active,
         'ReactPiano__Key--active': active,
       })}
       style={{

@@ -89,6 +89,7 @@ export const SoundfontPiano = forwardRef<SoundfontPianoRef, SoundfontPianoProps>
 
   return (
     <ControlledPiano
+      {...props}
       activeNotes={activeNotes}
       onAddActiveNote={onAddActiveNote}
       onRemoveActiveNote={onRemoveActiveNote}

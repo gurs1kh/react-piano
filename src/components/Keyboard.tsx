@@ -11,10 +11,12 @@ export interface KeyboardProps {
     last: number;
   };
   activeNotes: number[];
+  highlightedNotes?: number[];
   onPlayNoteInput: (midiNumber: number) => void;
   onStopNoteInput: (midiNumber: number) => void;
   renderNoteLabel: (params: {
     isActive: boolean;
+    isHighlighted: boolean;
     isAccidental: boolean;
     midiNumber: number;
   }) => ReactNode;
@@ -31,6 +33,7 @@ export const Keyboard = (props: KeyboardProps) => {
   const {
     noteRange,
     activeNotes,
+    highlightedNotes = [],
     onPlayNoteInput,
     onStopNoteInput,
     renderNoteLabel,
@@ -83,12 +86,14 @@ export const Keyboard = (props: KeyboardProps) => {
       {midiNumbers.map((midiNumber: number) => {
         const { isAccidental } = MidiNumbers.getAttributes(midiNumber);
         const isActive = !disabled && activeNotes.includes(midiNumber);
+        const isHighlighted = !disabled && highlightedNotes.includes(midiNumber);
         return (
           <Key
             naturalKeyWidth={naturalKeyWidth}
             midiNumber={midiNumber}
             noteRange={noteRange}
             active={!disableActiveStying && isActive}
+            highlighted={isHighlighted}
             accidental={isAccidental}
             disabled={disabled}
             onPlayNoteInput={onPlayNoteInput}
@@ -102,6 +107,7 @@ export const Keyboard = (props: KeyboardProps) => {
               : renderNoteLabel({
                   isActive,
                   isAccidental,
+                  isHighlighted,
                   midiNumber,
                 })}
           </Key>
