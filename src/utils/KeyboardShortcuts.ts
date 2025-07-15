@@ -13,7 +13,7 @@ interface CreateKeyboardShortcutsProps {
 function createKeyboardShortcuts({ firstNote, lastNote, keyboardConfig }: CreateKeyboardShortcutsProps) {
   let currentMidiNumber = firstNote;
   let naturalKeyIndex = 0;
-  const keyboardShortcuts = [];
+  const keyboardShortcuts: Record<number, string> = {};
 
   while (
     // There are still keys to be assigned
@@ -24,15 +24,9 @@ function createKeyboardShortcuts({ firstNote, lastNote, keyboardConfig }: Create
     const key = keyboardConfig[naturalKeyIndex];
     const { isAccidental } = MidiNumbers.getAttributes(currentMidiNumber);
     if (isAccidental) {
-      keyboardShortcuts.push({
-        key: key.flat,
-        midiNumber: currentMidiNumber,
-      });
+      keyboardShortcuts[currentMidiNumber] = key.flat;
     } else {
-      keyboardShortcuts.push({
-        key: key.natural,
-        midiNumber: currentMidiNumber,
-      });
+      keyboardShortcuts[currentMidiNumber] = key.natural;
       naturalKeyIndex++;
     }
     currentMidiNumber++;

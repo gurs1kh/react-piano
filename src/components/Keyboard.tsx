@@ -1,4 +1,4 @@
-import { useCallback, ReactNode } from 'react';
+import { useCallback } from 'react';
 import range from 'just-range';
 import classNames from 'classnames';
 
@@ -14,12 +14,6 @@ export interface KeyboardProps {
   highlightedNotes?: number[];
   onPlayNoteInput: (midiNumber: number) => void;
   onStopNoteInput: (midiNumber: number) => void;
-  renderNoteLabel: (params: {
-    isActive: boolean;
-    isHighlighted: boolean;
-    isAccidental: boolean;
-    midiNumber: number;
-  }) => ReactNode;
   keyWidthToHeight?: number;
   className?: string;
   disabled?: boolean;
@@ -27,6 +21,7 @@ export interface KeyboardProps {
   useTouchEvents?: boolean;
   width?: number;
   disableActiveStying?: boolean;
+  keyLabels?: Record<number, string>;
 }
 
 export const Keyboard = (props: KeyboardProps) => {
@@ -36,7 +31,6 @@ export const Keyboard = (props: KeyboardProps) => {
     highlightedNotes = [],
     onPlayNoteInput,
     onStopNoteInput,
-    renderNoteLabel,
     keyWidthToHeight = 0.33,
     className = '',
     disabled = false,
@@ -44,6 +38,7 @@ export const Keyboard = (props: KeyboardProps) => {
     useTouchEvents = false,
     width,
     disableActiveStying,
+    keyLabels = {},
   } = props;
 
   // Range of midi numbers on keyboard
@@ -101,16 +96,8 @@ export const Keyboard = (props: KeyboardProps) => {
             gliss={gliss}
             useTouchEvents={useTouchEvents}
             key={midiNumber}
-          >
-            {disabled
-              ? null
-              : renderNoteLabel({
-                  isActive,
-                  isAccidental,
-                  isHighlighted,
-                  midiNumber,
-                })}
-          </Key>
+            label={keyLabels[midiNumber]}
+          />
         );
       })}
     </div>

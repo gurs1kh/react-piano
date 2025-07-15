@@ -17,7 +17,7 @@ export interface KeyProps {
   accidentalWidthRatio?: number;
   pitchPositions?: { [pitch: string]: number };
   noteRange: { first: number; last: number };
-  children?: ReactNode;
+  label?: ReactNode;
 }
 
 const defaultPitchPositions = {
@@ -54,7 +54,7 @@ export const Key = (props: KeyProps) => {
     accidentalWidthRatio = 0.55,
     pitchPositions = defaultPitchPositions,
     noteRange,
-    children,
+    label,
   } = props;
 
   const getAbsoluteKeyPosition = (midiNumber: number) => {
@@ -105,7 +105,20 @@ export const Key = (props: KeyProps) => {
       onTouchCancel={useTouchEvents ? handleStopNoteInput : undefined}
       onTouchEnd={useTouchEvents ? handleStopNoteInput : undefined}
     >
-      <div className="ReactPiano__NoteLabelContainer">{children}</div>
+      {!disabled && (
+        <div className="ReactPiano__NoteLabelContainer">
+          <div
+            className={classNames('ReactPiano__NoteLabel', {
+              'ReactPiano__NoteLabel--active': active,
+              'ReactPiano__NoteLabel--highlighted': highlighted && !active,
+              'ReactPiano__NoteLabel--accidental': accidental,
+              'ReactPiano__NoteLabel--natural': !accidental,
+            })}
+          >
+            {label}
+          </div>
+        </div>
+      )}
     </div>
   );
 };

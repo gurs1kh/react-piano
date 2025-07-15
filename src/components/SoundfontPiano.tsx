@@ -13,6 +13,7 @@ interface SoundfontPianoProps extends Omit<ControlledPianoProps, 'onPlayNoteInpu
   onPlayNote?: (midiNumber: number) => void;
   onStopNote?: (midiNumber: number) => void;
   noteRange: NoteRange;
+  keyLabels?: Record<number, string>;
   keyboardShortcutInitialOffset?: number;
   enableKeyboardShortcuts?: boolean;
   muted?: boolean;
@@ -38,6 +39,7 @@ export const SoundfontPiano = forwardRef<SoundfontPianoRef, SoundfontPianoProps>
     disabled = false,
     onPlayNote = () => 0,
     onStopNote = () => 0,
+    keyLabels,
     keyboardShortcutInitialOffset = 0,
     enableKeyboardShortcuts = true,
     muted = false,
@@ -94,7 +96,7 @@ export const SoundfontPiano = forwardRef<SoundfontPianoRef, SoundfontPianoProps>
       onAddActiveNote={onAddActiveNote}
       onRemoveActiveNote={onRemoveActiveNote}
       noteRange={noteRange}
-      keyboardShortcuts={enableKeyboardShortcuts ? keyboardShortcuts : undefined}
+      keyLabels={keyLabels || (enableKeyboardShortcuts ? keyboardShortcuts : undefined)}
       disabled={isLoading || disabled}
       disableActiveStying={audioOnly}
       width={width}

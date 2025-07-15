@@ -39,7 +39,7 @@ export const useKeyboardShortcuts = (props: UseKeyboardShortcutsParams) => {
 
       const numNotes = noteRange.last - noteRange.first + 1;
       const minOffset = 0;
-      const maxOffset = numNotes - keyboardShortcuts.length;
+      const maxOffset = numNotes - Object.keys(keyboardShortcuts).length;
 
       const newOffset = Math.max(
         minOffset,
@@ -54,14 +54,13 @@ export const useKeyboardShortcuts = (props: UseKeyboardShortcutsParams) => {
     [noteRange, offset, keyboardShortcuts]
   );
 
-  const getMidiNumberForKey = useCallback(
-    (key: string): number | null => {
-      if (!keyboardShortcuts) return null;
-      const shortcut = keyboardShortcuts.find((sh) => sh.key === key.toLowerCase());
-      return shortcut ? shortcut.midiNumber : null;
-    },
-    [keyboardShortcuts]
-  );
+  const getMidiNumberForKey = useCallback((key: string) => {
+    if (!keyboardShortcuts) return null;
+
+    const midiNumberKey = Object.keys(keyboardShortcuts)
+      .find(midiNumberKey => keyboardShortcuts[Number(midiNumberKey)] === key);
+    return midiNumberKey ? Number(midiNumberKey) : null;
+  }, [keyboardShortcuts]);
 
   const handleKeyDown = useCallback(
     (event: KeyboardEvent) => {
