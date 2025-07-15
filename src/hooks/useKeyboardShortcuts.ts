@@ -65,7 +65,7 @@ export const useKeyboardShortcuts = (props: UseKeyboardShortcutsParams) => {
   const handleKeyDown = useCallback(
     (event: KeyboardEvent) => {
       if (event.ctrlKey || event.metaKey || event.shiftKey) return;
-      const midiNumber = getMidiNumberForKey(event.key);
+      const midiNumber = getMidiNumberForKey(event.key.toLowerCase());
       if (!midiNumber) return;
 
       onAddActiveNote(midiNumber);
@@ -75,7 +75,7 @@ export const useKeyboardShortcuts = (props: UseKeyboardShortcutsParams) => {
 
   const handleKeyUp = useCallback(
     (event: KeyboardEvent) => {
-      const midiNumber = getMidiNumberForKey(event.key);
+      const midiNumber = getMidiNumberForKey(event.key.toLowerCase());
       if (!midiNumber) return;
 
       onRemoveActiveNote(midiNumber);
