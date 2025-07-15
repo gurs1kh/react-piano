@@ -2,7 +2,7 @@ import { useCallback } from 'react';
 import range from 'just-range';
 import classNames from 'classnames';
 
-import { Key } from './Key';
+import { Key, KeyColor } from './Key';
 import { MidiNumbers } from '../utils/MidiNumbers';
 
 export interface KeyboardProps {
@@ -11,7 +11,6 @@ export interface KeyboardProps {
     last: number;
   };
   activeNotes: number[];
-  highlightedNotes?: number[];
   onPlayNoteInput: (midiNumber: number) => void;
   onStopNoteInput: (midiNumber: number) => void;
   keyWidthToHeight?: number;
@@ -22,13 +21,13 @@ export interface KeyboardProps {
   width?: number;
   disableActiveStying?: boolean;
   keyLabels?: Record<number, string>;
+  keyColors?: Record<number, KeyColor>;
 }
 
 export const Keyboard = (props: KeyboardProps) => {
   const {
     noteRange,
     activeNotes,
-    highlightedNotes = [],
     onPlayNoteInput,
     onStopNoteInput,
     keyWidthToHeight = 0.33,
@@ -39,6 +38,7 @@ export const Keyboard = (props: KeyboardProps) => {
     width,
     disableActiveStying,
     keyLabels = {},
+    keyColors = {},
   } = props;
 
   // Range of midi numbers on keyboard
@@ -81,14 +81,12 @@ export const Keyboard = (props: KeyboardProps) => {
       {midiNumbers.map((midiNumber: number) => {
         const { isAccidental } = MidiNumbers.getAttributes(midiNumber);
         const isActive = !disabled && activeNotes.includes(midiNumber);
-        const isHighlighted = !disabled && highlightedNotes.includes(midiNumber);
         return (
           <Key
             naturalKeyWidth={naturalKeyWidth}
             midiNumber={midiNumber}
             noteRange={noteRange}
             active={!disableActiveStying && isActive}
-            highlighted={isHighlighted}
             accidental={isAccidental}
             disabled={disabled}
             onPlayNoteInput={onPlayNoteInput}
@@ -97,6 +95,7 @@ export const Keyboard = (props: KeyboardProps) => {
             useTouchEvents={useTouchEvents}
             key={midiNumber}
             label={keyLabels[midiNumber]}
+            keyColor={keyColors[midiNumber]}
           />
         );
       })}

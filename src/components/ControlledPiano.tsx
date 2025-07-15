@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react';
 import { Keyboard } from './Keyboard';
+import { KeyColor } from './Key';
 
 export interface ControlledPianoProps {
   noteRange: {
@@ -7,7 +8,6 @@ export interface ControlledPianoProps {
     last: number;
   };
   activeNotes?: number[];
-  highlightedNotes?: number[];
   onAddActiveNote?: (midiNumber: number) => void;
   onRemoveActiveNote?: (midiNumber: number) => void;
   className?: string;
@@ -16,13 +16,13 @@ export interface ControlledPianoProps {
   width?: number;
   keyWidthToHeight?: number;
   keyLabels?: Record<number, string>;
+  keyColors?: Record<number, KeyColor>;
 }
 
 export const ControlledPiano = (props: ControlledPianoProps) => {
   const {
     noteRange,
     activeNotes = [],
-    highlightedNotes = [],
     onAddActiveNote = () => 0,
     onRemoveActiveNote = () => 0,
     className,
@@ -31,6 +31,7 @@ export const ControlledPiano = (props: ControlledPianoProps) => {
     width,
     keyWidthToHeight,
     keyLabels,
+    keyColors,
   } = props;
 
   const [isMouseDown, setIsMouseDown] = useState(false);
@@ -65,7 +66,6 @@ export const ControlledPiano = (props: ControlledPianoProps) => {
         onPlayNoteInput={handlePlayNoteInput}
         onStopNoteInput={handleStopNoteInput}
         activeNotes={activeNotes}
-        highlightedNotes={highlightedNotes}
         className={className}
         disabled={disabled}
         width={width}
@@ -74,6 +74,7 @@ export const ControlledPiano = (props: ControlledPianoProps) => {
         useTouchEvents={useTouchEvents}
         disableActiveStying={disableActiveStying}
         keyLabels={keyLabels}
+        keyColors={keyColors}
       />
     </div>
   );

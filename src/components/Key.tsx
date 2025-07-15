@@ -3,6 +3,8 @@ import classNames from 'classnames';
 
 import { MidiNumbers } from '../utils/MidiNumbers';
 
+export type KeyColor = string | { backgroundColor: string; color?: string };
+
 export interface KeyProps {
   midiNumber: number;
   naturalKeyWidth: number; // Width as a ratio between 0 and 1
@@ -10,7 +12,6 @@ export interface KeyProps {
   useTouchEvents?: boolean;
   accidental?: boolean;
   active?: boolean;
-  highlighted?: boolean;
   disabled?: boolean;
   onPlayNoteInput: (midiNumber: number) => void;
   onStopNoteInput: (midiNumber: number) => void;
@@ -18,6 +19,7 @@ export interface KeyProps {
   pitchPositions?: { [pitch: string]: number };
   noteRange: { first: number; last: number };
   label?: ReactNode;
+  keyColor?: KeyColor;
 }
 
 const defaultPitchPositions = {
@@ -47,7 +49,6 @@ export const Key = (props: KeyProps) => {
     useTouchEvents = false,
     accidental = false,
     active = false,
-    highlighted = false,
     disabled = false,
     onPlayNoteInput,
     onStopNoteInput,
@@ -55,6 +56,7 @@ export const Key = (props: KeyProps) => {
     pitchPositions = defaultPitchPositions,
     noteRange,
     label,
+    keyColor,
   } = props;
 
   const getAbsoluteKeyPosition = (midiNumber: number) => {
@@ -80,6 +82,9 @@ export const Key = (props: KeyProps) => {
     onStopNoteInput(midiNumber);
   }, [onStopNoteInput, midiNumber]);
 
+  const backgroundColor = typeof keyColor === 'string' ? keyColor : keyColor?.backgroundColor;
+  const color = typeof keyColor === 'object' && keyColor.color;
+
   // Need to conditionally include/exclude handlers based on useTouchEvents,
   // because otherwise mobile taps double fire events.
   return (
@@ -88,7 +93,6 @@ export const Key = (props: KeyProps) => {
         'ReactPiano__Key--accidental': accidental,
         'ReactPiano__Key--natural': !accidental,
         'ReactPiano__Key--disabled': disabled,
-        'ReactPiano__Key--highlighted': highlighted && !active,
         'ReactPiano__Key--active': active,
       })}
       style={{
@@ -96,6 +100,7 @@ export const Key = (props: KeyProps) => {
         width: ratioToPercentage(
           accidental ? accidentalWidthRatio * naturalKeyWidth : naturalKeyWidth,
         ),
+        backgroundColor,
       }}
       onMouseDown={useTouchEvents ? undefined : handlePlayNoteInput}
       onMouseUp={useTouchEvents ? undefined : handleStopNoteInput}
@@ -110,10 +115,10 @@ export const Key = (props: KeyProps) => {
           <div
             className={classNames('ReactPiano__NoteLabel', {
               'ReactPiano__NoteLabel--active': active,
-              'ReactPiano__NoteLabel--highlighted': highlighted && !active,
               'ReactPiano__NoteLabel--accidental': accidental,
               'ReactPiano__NoteLabel--natural': !accidental,
             })}
+            style={color ? { color } : {}}
           >
             {label}
           </div>
