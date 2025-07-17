@@ -2,12 +2,14 @@ import { useEffect, useRef } from "react";
 import SimpleMidiInput from "simple-midi-input";
 
 interface UseMidiInputParams {
+  enableMidiInput?: boolean;
   onAddActiveNote?: (midiNumber: number) => void;
   onRemoveActiveNote?: (midiNumber: number) => void;
 }
 
 export const useMidiInput = (params: UseMidiInputParams) => {
   const {
+    enableMidiInput = true,
     onAddActiveNote = () => 0,
     onRemoveActiveNote = () => 0,
   } = params;
@@ -33,12 +35,14 @@ export const useMidiInput = (params: UseMidiInputParams) => {
     smi.on('noteOn', handleNoteOn);
     smi.on('noteOff', handleNoteOff);
 
-    navigator.requestMIDIAccess().then((midi) => smi.attach(midi));
+    if (enableMidiInput) {
+      navigator.requestMIDIAccess().then((midi) => smi.attach(midi));
+    }
 
     return () => {
       smi.off('noteOn', handleNoteOn);
       smi.off('noteOff', handleNoteOff);
       smi.detach();
     };
-  }, [onAddActiveNote, onRemoveActiveNote])
+  }, [enableMidiInput, onAddActiveNote, onRemoveActiveNote])
 }

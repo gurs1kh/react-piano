@@ -30,6 +30,7 @@ export const InteractiveDemo = () => {
           instrumentName={instrumentName}
           noteRange={noteRange}
           width={containerWidth}
+          enableMidiInput
         />
       </div>
       <div className="row mt-5">

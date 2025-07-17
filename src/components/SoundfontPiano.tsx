@@ -17,6 +17,7 @@ interface SoundfontPianoProps extends Omit<ControlledPianoProps, 'onPlayNoteInpu
   keyLabels?: Record<number, string>;
   keyboardShortcutInitialOffset?: number;
   enableKeyboardShortcuts?: boolean;
+  enableMidiInput?: boolean;
   muted?: boolean;
   audioOnly?: boolean;
 }
@@ -43,6 +44,7 @@ export const SoundfontPiano = forwardRef<SoundfontPianoRef, SoundfontPianoProps>
     keyLabels,
     keyboardShortcutInitialOffset = 0,
     enableKeyboardShortcuts = true,
+    enableMidiInput = false,
     muted = false,
     audioOnly = false,
   } = props;
@@ -70,6 +72,7 @@ export const SoundfontPiano = forwardRef<SoundfontPianoRef, SoundfontPianoProps>
   });
 
   useMidiInput({
+    enableMidiInput,
     onAddActiveNote,
     onRemoveActiveNote,
   });
