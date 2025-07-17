@@ -2,6 +2,7 @@ import { useEffect, useRef, forwardRef, useImperativeHandle } from 'react';
 import { InstrumentName } from 'soundfont-player';
 import { useKeyboardShortcuts, useSoundfont } from '../hooks';
 import { NoteRange, useNoteRange } from '../hooks/useNoteRange';
+import { useMidiInput } from '../hooks/useMidiInput';
 import difference from 'lodash.difference';
 import { ControlledPiano, ControlledPianoProps } from './ControlledPiano';
 
@@ -68,6 +69,11 @@ export const SoundfontPiano = forwardRef<SoundfontPianoRef, SoundfontPianoProps>
     onRemoveActiveNote,
   });
 
+  useMidiInput({
+    onAddActiveNote,
+    onRemoveActiveNote,
+  });
+
   useEffect(() => {
     stopAllNotes();
     prevActiveNotesRef.current = [];
@@ -75,18 +81,23 @@ export const SoundfontPiano = forwardRef<SoundfontPianoRef, SoundfontPianoProps>
 
   useEffect(() => {
     if (disabled) return;
+
     const prevActiveNotes = prevActiveNotesRef.current || [];
-    const notesStopped = difference(prevActiveNotes, activeNotes);
-    const notesStarted = difference(activeNotes, prevActiveNotes);
+    const activeNotesSet = [...new Set(activeNotes)];
+    prevActiveNotesRef.current = activeNotesSet;
+
+    const notesStopped = difference(prevActiveNotes, activeNotesSet);
+    const notesStarted = difference(activeNotesSet, prevActiveNotes);
+
     notesStarted.forEach((midiNumber) => {
       onPlayNote(midiNumber);
       if (!muted) playNote(midiNumber);
     });
+
     notesStopped.forEach((midiNumber) => {
       onStopNote(midiNumber);
       if (!muted) stopNote(midiNumber);
     });
-    prevActiveNotesRef.current = activeNotes;
   }, [activeNotes, disabled, muted, onPlayNote, playNote, onStopNote, stopNote]);
 
   return (

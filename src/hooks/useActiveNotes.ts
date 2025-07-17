@@ -1,17 +1,19 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 
 export const useActiveNotes = () => {
   const [activeNotes, setActiveNotes] = useState<number[]>([]);
 
-  const addActiveNote = (midiNumber: number) => {
-    if (activeNotes.includes(midiNumber)) return;
+  const addActiveNote = useCallback((midiNumber: number) => {
+    setActiveNotes((prev) => {
+      if (prev.includes(midiNumber)) return prev;
 
-    setActiveNotes((prev) => [...prev, midiNumber]);
-  };
+      return [...prev, midiNumber];
+    });
+  }, []);
 
-  const removeActiveNote = (midiNumber: number) => {
+  const removeActiveNote = useCallback((midiNumber: number) => {
     setActiveNotes((prev) => prev.filter((note) => note !== midiNumber));
-  };
+  }, []);
 
   return {
     activeNotes,
