@@ -32,17 +32,21 @@ export const useMidiInput = (params: UseMidiInputParams) => {
       onRemoveActiveNote(data.key);
     };
 
+    const cleanup = () => {
+      try {
+        smi.off('noteOn', handleNoteOn);
+        smi.off('noteOff', handleNoteOff);
+        smi.detach();
+      } catch (_e) {} // eslint-disable-line
+    };
+
+    if (!enableMidiInput) return cleanup;
+
     smi.on('noteOn', handleNoteOn);
     smi.on('noteOff', handleNoteOff);
 
-    if (enableMidiInput) {
-      navigator.requestMIDIAccess().then((midi) => smi.attach(midi));
-    }
+    navigator.requestMIDIAccess().then((midi) => smi.attach(midi));
 
-    return () => {
-      smi.off('noteOn', handleNoteOn);
-      smi.off('noteOff', handleNoteOff);
-      smi.detach();
-    };
+    return cleanup;
   }, [enableMidiInput, onAddActiveNote, onRemoveActiveNote])
 }
