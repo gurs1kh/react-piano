@@ -8,8 +8,8 @@ import { ControlledPiano, ControlledPianoProps } from './ControlledPiano';
 
 interface SoundfontPianoProps extends Omit<ControlledPianoProps, 'onPlayNoteInput' | 'onStopNoteInput' | 'playNote' | 'stopNote' | 'noteRange'> {
   width: number;
+  audioContext: AudioContext;
   instrumentName?: InstrumentName;
-  audioContext?: AudioContext;
   soundfontHostname?: string;
   onPlayNote?: (midiNumber: number) => void;
   onStopNote?: (midiNumber: number) => void;

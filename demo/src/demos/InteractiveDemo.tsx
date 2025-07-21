@@ -4,6 +4,8 @@ import { MdArrowDownward } from 'react-icons/md';
 import useDimensions from 'react-use-dimensions';
 import { PianoConfig } from '../components/PianoConfig';
 
+const audioContext = new (window.AudioContext || (window as any).webkitAudioContext as AudioContext)()
+
 export const InteractiveDemo = () => {
   const { instrumentList } = useInstrumentList();
   const [instrumentName, setInstrumentName] = useState<InstrumentName>('acoustic_grand_piano');
@@ -24,6 +26,7 @@ export const InteractiveDemo = () => {
       </div>
       <div className="mt-4" ref={dimensionsRef}>
         <SoundfontPiano
+          audioContext={audioContext}
           activeNotes={activeNotes}
           onAddActiveNote={addActiveNote}
           onRemoveActiveNote={removeActiveNote}

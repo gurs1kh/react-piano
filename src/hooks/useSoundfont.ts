@@ -4,20 +4,20 @@ import { defaults } from '../config/defaults';
 export { InstrumentName } from 'soundfont-player';
 
 interface UseSoundfontOptions {
+  audioContext: AudioContext;
   instrumentName?: InstrumentName;
   hostname?: string;
   format?: 'mp3' | 'ogg';
   soundfont?: 'MusyngKite' | 'FluidR3_GM';
-  audioContext?: AudioContext;
 }
 
 export function useSoundfont(props: UseSoundfontOptions) {
   const {
+    audioContext,
     instrumentName = defaults.instrumentName,
     hostname = defaults.soundfontHostname,
     format = defaults.format,
     soundfont = defaults.soundfont,
-    audioContext = defaults.audioContext,
   } = props;
   
   const [instrument, setInstrument] = useState<Player | undefined>();

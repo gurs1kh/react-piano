@@ -4,6 +4,8 @@ import classNames from 'classnames';
 import useDimensions from 'react-use-dimensions';
 import { lostWoods as song } from '../data/songs'; // Adjust the import path as necessary
 
+const audioContext = new (window.AudioContext || (window as any).webkitAudioContext as AudioContext)()
+
 export const PlaybackDemo =() => {
   const [activeNotesIndex, setActiveNotesIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -63,6 +65,7 @@ export const PlaybackDemo =() => {
       <div className="mt-4" ref={dimensionsRef}>
         <SoundfontPiano
           ref={pianoRef}
+          audioContext={audioContext}
           enableKeyboardShortcuts={false}
           instrumentName={song.instrumentName}
           activeNotes={isPlaying ? song.notes[activeNotesIndex] : []}
